@@ -29,6 +29,13 @@
           </a>
         {% endmacro %}
 
+        {# Macro for rendering HTML element attributes #}
+        {% macro render_attrs(map) -%}
+          {%- for name, value in map %}
+            {{- ' ' ~ name }}="{{ value|e('html_attr') }}"
+          {%- endfor -%}
+        {%- endmacro %}
+
         {% if visible_breadcrumbs and visible_breadcrumbs[0]|length > 1 %}
         <nav class="row" id="concept-breadcrumbs" aria-label='{{ "Breadcrumbs" | trans }}'>
           {% for path in visible_breadcrumbs %}
@@ -55,12 +62,8 @@
 
         <div class="row" id="concept-heading">
           <div class="col-lg-4 ps-0" id="concept-property-label">
-          {%- set label = custom_labels['skos:prefLabel']['label'][request.lang] -%}
-          {%- if label -%}
-            {{ label[:1]|upper ~ label[1:] }} {# Capitalizing labels #}
-          {%- else -%}
-            {{ "skos:prefLabel" | trans }}
-          {%- endif -%}
+          {%- set label = custom_labels['skos:prefLabel']['label'][request.lang] | default("skos:prefLabel" | trans) -%}
+          {{ label[:1]|upper ~ label[1:] }} {# Capitalizing labels #}
           </div>
           <div class="col-lg-8 gx-0 gx-lg-4" id="concept-label">
           {% if concept.hasXlLabel %}
@@ -90,13 +93,21 @@
 
         {% for property in concept.properties %}{% if property.getSubPropertyOf != 'skos:hiddenLabel' %}
         <div class="row property prop-{{property.ID}}">
-          <div class="col-lg-4 ps-0 property-label"><h2>
-          {%- set label = custom_labels[property.type]['label'][request.lang] -%}
-          {%- if label -%}
-            {{ label[:1]|upper ~ label[1:] }} {# Capitalizing labels #}
-          {%- else -%}
-            {{ property.label[:1]|upper ~ property.label[1:] }}
+          {%- set label = custom_labels[property.type]['label'][request.lang] | default(property.label) -%}
+          {%- set tooltip = custom_labels[property.type]['description'][request.lang] | default(property.description | default('')) -%}
+
+          {%- set classes = [] -%}
+          {%- if tooltip is not empty -%}
+            {%- set classes = classes|merge(['tooltip-inline', 't-top']) %}
           {%- endif -%}
+
+          {%- set attrs = {'class': classes|join(' ')} -%}
+          {%- if tooltip is not empty -%}
+            {%- set attrs = attrs|merge({'data-title': tooltip}) -%}
+          {%- endif -%}
+
+          <div class="col-lg-4 ps-0 property-label"><h2{{ _self.render_attrs(attrs) }}>
+            {{- label[:1]|upper ~ label[1:] -}} {#- Capitalizing labels -#}
           </h2></div>
           <div class="col-lg-8 gx-0 gx-lg-4 align-self-center property-value">
             <ul class="align-bottom">
@@ -151,7 +162,7 @@
         {% set foreignLabels = concept.foreignLabels %}
         {% if foreignLabels %}
         <div class="row property prop-foreignlabels">
-          <div class="col-lg-4 ps-0 property-label"><h2>{{ 'foreign prefLabels'|trans }}</h2></div>
+          <div class="col-lg-4 ps-0 property-label"><h2 class="tooltip-inline t-top" data-title="{{ 'foreign prefLabel help'|trans }}">{{ 'foreign prefLabels'|trans }}</h2></div>
           <div class="col-lg-8 gx-0 gx-lg-4" id="concept-other-languages">
             {% for language,labels in foreignLabels %}
             <div class="row mb-2">
