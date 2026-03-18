@@ -599,10 +599,6 @@ function startGlobalSearchApp () {
 
         const isInsideLangList = document.activeElement.closest('#language-list')
 
-        if (isInsideLangList && (key === 'ArrowLeft' || key === 'ArrowRight')) {
-          return // anna eventin kuolla luonnollisesti
-        }
-
         event.preventDefault()
 
         if (typeof binding.value === 'function') {
