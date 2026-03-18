@@ -255,10 +255,6 @@ function startGlobalSearchApp () {
       onLangMenuKeydown (e) {
         const items = Array.from(document.querySelectorAll('#language-list input'))
         if (!items.length) return
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-          e.stopPropagation() // estää dropdownKeyNav:in
-          return // EI preventDefault → ei rikota muuta käytöstä
-        }
         this.onListMenuKeydown(e, items)
       },
       onVocabMenuKeydown (e) {
@@ -300,6 +296,7 @@ function startGlobalSearchApp () {
           case 'Enter':
             e.preventDefault()
             items[currentIndex].click()
+            console.log(items[currentIndex]) //DEBUG
             break
           case 'Home':
             e.preventDefault()
@@ -445,18 +442,17 @@ function startGlobalSearchApp () {
             id="language-list"
             @keydown="onLangMenuKeydown"
             role="menu">
-            <li v-for="(value, key) in languageStrings" :key="key" role="none" tabindex=-1>
-              <label class="dropdown-item">
-                <input
-                  type="radio"
-                  :value="key"
-                  tabindex=-1
-                  @keydown.left.prevent
-                  @keydown.right.prevent
-                  @click.stop
-                  v-model="selectedLanguage">
+            <li v-for="(value, key) in languageStrings" :key="key" role="none">
+              <a
+                class="dropdown-item"
+                :value="key"
+                role="menuitem"
+                @click="changeLang(key)"
+                @keydown.enter="changeLang(key)"
+                @keydown.space.prevent.stop="changeLang(key)"
+                tabindex=0 >
                 {{ value }}
-              </label>
+              </a>
             </li>
           </ul>
         </div>

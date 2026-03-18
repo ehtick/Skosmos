@@ -30,32 +30,43 @@ describe('Global search bar', () => {
   })
 
   it('changing the search language changes the language selector dropdown header text', () => {
-
+    cy.get('#global-search-toggle').click()
     cy.get('#language-selector .dropdown-toggle').should('contain.text', '2. Valitse kieli')
+    cy.get('#language-selector .dropdown-toggle').click()
 
-    cy.get('#language-list li').find('input[type="radio"][value="en"]').check({ force: true })
+    cy.get('#language-list').should('be.visible')
+
+    cy.get('#language-list li').get('a[value="en"]').click()
     cy.get('#language-selector .dropdown-toggle').should('contain.text', 'englanti')
+    cy.get('#language-list').should('be.hidden')
 
-    cy.get('#language-list li').find('input[type="radio"][value="sv"]').check({ force: true })
+    cy.get('#language-selector .dropdown-toggle').click()
+    cy.get('#language-list li').get('a[value="sv"]').click()
     cy.get('#language-selector .dropdown-toggle').should('contain.text', 'ruotsi')
   })
 
   it('selecting "all languages" does not change content language', () => {
 
+    cy.get('#global-search-toggle').click()
     cy.get('#language-selector .dropdown-toggle').should('contain.text', '2. Valitse kieli')
-    cy.get('#language-list li label').find('input[type="radio"][value="en"]').check({ force: true })
+    cy.get('#language-selector .dropdown-toggle').click()
+    cy.get('#language-list').should('be.visible')
+
+    cy.get('#language-list li').get('a[value="en"]').click()
     cy.url().should('include', 'clang=en')
 
-    cy.get('#language-list li label').find('input[type="radio"][value="all"]').check({ force: true })
+    cy.get('#language-selector .dropdown-toggle').click()
+    cy.get('#language-list').should('be.visible')
+    cy.get('#language-list li').get('a[value="all"]').click()
     cy.url().should('include', 'clang=en')
   })
 
     it('Dropdown search results are displayed for the selected vocabulary and search language', () => {
 
     cy.get('#global-search-toggle').click()
-    // select "YSO"
     cy.get('#vocab-list').contains('label', 'YSO').find('input[type="checkbox"]').check({ force: true })
-    cy.get('#language-list li').contains('suomi').find('input[type="radio"]').check({ force: true })
+    cy.get('#language-selector .dropdown-toggle').click()
+    cy.get('#language-list li').get('a[value="fi"]').click()
 
     cy.get('#search-field').type('arkeolog'); // even if the search yields no results, there shoulde a single line in the result list
     cy.get('#search-autocomplete-results', { timeout: 20000 }).should('be.visible').children().should('have.length.greaterThan', 0);
@@ -68,7 +79,8 @@ describe('Global search bar', () => {
 
     cy.get('#global-search-toggle').click()
     cy.get('#vocab-list li').eq(0).find('input[type="checkbox"]').check({ force: true })
-    cy.get('#language-list li').contains('ruotsi').find('input[type="radio"]').check({ force: true })
+    cy.get('#language-selector .dropdown-toggle').click()
+    cy.get('#language-list li').get('a[value="sv"]').click()
 
     cy.get('#search-field').type('kissa'); // even if the search yields no results, there shoulde a single line in the result list
     cy.get('#search-autocomplete-results', { timeout: 20000 }).should('be.visible').children().should('have.length.greaterThan', 0);
@@ -253,11 +265,12 @@ describe('Global search bar', () => {
       it('Enter selects a language in the language dropdown', () => {
         getLangButton().click();
         cy.get('#language-selector .dropdown-menu').should('have.class', 'show');
+        cy.focused().type('{downarrow}');
 
-        cy.get('#language-list li').eq(1).focus().should('be.focused');
+        cy.get('#language-list li').first().find('.dropdown-item').should('be.focused');
         cy.focused().type('{enter}');
 
-        cy.get('#language-list li').eq(1).get('input').should('be.checked');
+        cy.get('#language-selector .dropdown-toggle').should('contain.text', 'englanti')
       });
     })
 })
