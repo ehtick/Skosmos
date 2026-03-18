@@ -597,8 +597,6 @@ function startGlobalSearchApp () {
 
         if (!el.contains(document.activeElement)) return
 
-        const isInsideLangList = document.activeElement.closest('#language-list')
-
         event.preventDefault()
 
         if (typeof binding.value === 'function') {
