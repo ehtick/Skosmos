@@ -4,11 +4,11 @@ describe('Global search bar', () => {
     cy.get('#search-wrapper').should('exist')
   })
 
-  it('vocab-list has 14 vocabularies', () => {
+  it('Vocab-list has 14 vocabularies', () => {
     cy.get('#vocab-list li').should('have.length', 14)
   })
 
-  it('dropdown menu header text is updated according to the selected vocabularies', () => {
+  it('Dropdown menu header text is updated according to the selected vocabularies', () => {
     cy.get('#vocab-selector .vocab-dropdown-btn').should('contain.text', '1. Valitse sanasto')
     // select "altlabel"
     cy.get('#vocab-list').contains('label', 'altlabel').find('input[type="checkbox"]').check({ force: true })
@@ -23,13 +23,13 @@ describe('Global search bar', () => {
     cy.get('#vocab-selector .vocab-dropdown-btn').should('contain.text', 'YSO')
   })
 
-  it('dropdown menu header text returns to original hint if no vocabularies are selected', () => {
+  it('Dropdown menu header text returns to original hint if no vocabularies are selected', () => {
     cy.get('#vocab-list li').eq(1).find('input[type="checkbox"]').check({ force: true })
     cy.get('#vocab-list li').eq(1).find('input[type="checkbox"]').uncheck({ force: true })
     cy.get('#vocab-selector .vocab-dropdown-btn').should('contain.text', '1. Valitse sanasto')
   })
 
-  it('changing the search language changes the language selector dropdown header text', () => {
+  it('Changing the search language changes the language selector dropdown header text', () => {
     cy.get('#global-search-toggle').click()
     cy.get('#language-selector .dropdown-toggle').should('contain.text', '2. Valitse kieli')
     cy.get('#language-selector .dropdown-toggle').click()
@@ -45,7 +45,7 @@ describe('Global search bar', () => {
     cy.get('#language-selector .dropdown-toggle').should('contain.text', 'ruotsi')
   })
 
-  it('selecting "all languages" does not change content language', () => {
+  it('Selecting "all languages" does not change content language', () => {
 
     cy.get('#global-search-toggle').click()
     cy.get('#language-selector .dropdown-toggle').should('contain.text', '2. Valitse kieli')
