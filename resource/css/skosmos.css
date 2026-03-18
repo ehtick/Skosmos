@@ -77,15 +77,13 @@
   --search-button-bg: var(--dark-color);
   --search-button-text: var(--white-color);
   --search-dropdown-bg: var(--secondary-light-color);
-  --search-dropdown-hover-bg: var(--dark-color);
-  --search-dropdown-hover-text: var(--white-color);
   --search-dropdown-selected-bg: var(--dark-color);
   --search-dropdown-selected-text: var(--white-color);
   --search-dropdown-toggle-hover-bg: var(--medium-color);
   --search-field-bg: var(--white-color);
   --search-hover-bg: var(--light-color);
-  --search-vocab-selector-check: var(--white-color);
-  --search-vocab-selector-selected-bg: var(--dark-color);
+  --global-search-vocab-selector-check: var(--white-color);
+  --global-search-vocab-selector-selected-bg: var(--dark-color);
   --vocab-search-language-selector-hover-bg: var(--dark-color);
   --vocab-search-language-selector-hover-text: var(--white-color);
 
@@ -327,6 +325,10 @@ header .container-fluid .row {
 
 /* Language selector  */
 
+#language-list li:hover a, #language-list li:active a {
+  color: var(--vocab-search-language-dropdown-hover-text);
+  background-color: var(--vocab-search-language-dropdown-hover-bg);
+}
 
 #language-list li:hover label, #language-list li:active label {
   background-color: var(--search-hover-bg);
@@ -469,7 +471,7 @@ header .container-fluid .row {
   left: 0;
   height: 1.5rem;
   width: 1.5rem;
-  background-color: var(--search-vocab-selector-check);
+  background-color: var(--global-search-vocab-selector-check);
 }
 
 #search-wrapper .checkmark::after {
@@ -477,7 +479,7 @@ header .container-fluid .row {
   top: 5px;
   width: 5px;
   height: 10px;
-  border: solid var(--search-vocab-selector-check);
+  border: solid var(--global-search-vocab-selector-check);
   border-width: 0 3px 3px 0;
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
