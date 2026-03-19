@@ -81,8 +81,9 @@ RUN sed -i 's/;date.timezone =/date.timezone = "UTC"/g' /etc/php/8.3/apache2/php
 
 COPY dockerfiles/config/000-default.conf /etc/apache2/sites-available/000-default.conf
 
-RUN a2enmod rewrite
-RUN a2enmod expires
+RUN a2enmod \
+        rewrite \
+        expires
 
 # set ServerName & redirect error log to stderr for docker logs
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf && \
@@ -121,14 +122,12 @@ RUN apt-get update && apt-get install -y \
         xvfb \
  && rm -rf /var/lib/apt/lists/*
 
-# vendors with dev dependencies
+ # Composer vendors and Node modules from previous stages
 COPY --from=composer-installer /app/vendor /var/www/html/vendor
+COPY --from=npm-installer /usr/src/app/node_modules /var/www/html/node_modules
 
 # all source files including tests
 COPY . /var/www/html/
-
-# install Node modules with dev dependencies
-COPY --from=npm-installer /usr/src/app/node_modules /var/www/html/node_modules
 
 # Configure Skosmos
 COPY dockerfiles/config/config-docker.ttl /var/www/html/config.ttl
@@ -138,8 +137,9 @@ RUN npx cypress install
 
 FROM runtime AS production
 
-# vendors (production only, from composer-prod stage)
+# Composer vendors and Node modules from previous stages
 COPY --from=composer-installer /app/vendor /var/www/html/vendor
+COPY --from=npm-installer /usr/src/app/node_modules /var/www/html/node_modules
 
 # sources (only production files)
 COPY bin /var/www/html/bin
@@ -154,8 +154,5 @@ COPY composer.json /var/www/html
 COPY config.ttl.dist /var/www/html
 COPY favicon.ico /var/www/html
 COPY swagger.json /var/www/html
-
-# install Node modules (from npm-installer stage)
-COPY --from=npm-installer /usr/src/app/node_modules /var/www/html/node_modules
 
 HEALTHCHECK --interval=5s --timeout=3s --retries=3 CMD curl -f http://localhost || exit 1
