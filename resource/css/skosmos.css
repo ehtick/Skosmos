@@ -426,6 +426,10 @@ header .container-fluid .row {
   user-select: none;
 }
 
+#vocab-list li:hover label {
+  color: var(--headerbar-text) !important;
+}
+
 #vocab-list {
   padding-top: 0.25rem;
   padding-left: 0.5rem;
