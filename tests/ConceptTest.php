@@ -220,16 +220,15 @@ class ConceptTest extends PHPUnit\Framework\TestCase
      */
     public function testGetPropertiesAlphabeticalSortingOfPropertyValues()
     {
-        $concept = $this->vocab->getConceptInfo('http://www.skosmos.skos/test/ta1', 'en');
+        $vocab = $this->model->getVocabulary('collation');
+        $concept = $vocab->getConceptInfo('http://www.skosmos.skos/collation/val0', 'fi');
         $props = $concept->getProperties();
-        $prevlabel = null;
+        $labels = [];
         foreach($props['skos:narrower']->getValues() as $val) {
-            $label = $val->getLabel();
-            if ($prevlabel) {
-                $this->assertEquals(-1, strnatcasecmp($prevlabel, $label));
-            }
-            $prevlabel = $label;
+            $labels[] = $val->getLabel()->getValue();
         }
+        $expected = ["tšekin kieli", "töyhtöhyyppä"];
+        $this->assertEquals($expected, $labels);
     }
 
     /**

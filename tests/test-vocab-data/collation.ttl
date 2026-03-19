@@ -27,8 +27,12 @@ skos:broader a rdf:Property ;
 skos:narrower a rdf:Property ;
     rdfs:label "has narrower"@en .
 
+collation:val0 a skos:Concept ;
+    skos:narrower collation:val1, collation:val2 ;
+    skos:prefLabel "collation test"@en, "lajittelujärjestystesti"@fi .
+
 collation:val1 a skos:Concept ;
-    skos:prefLabel "tšekin kieli"@fi .
+    skos:prefLabel "tšekin kieli"@fi, "Czech language"@en .
 
 collation:val2 a skos:Concept ;
-    skos:prefLabel "töyhtöhyyppä"@fi .
+    skos:prefLabel "töyhtöhyyppä"@fi, "Vanellus vanellus"@en .
