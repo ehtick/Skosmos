@@ -223,8 +223,8 @@ class GlobalConfig extends BaseConfig
         if ($region !== '') {
             if (preg_match('/^[a-zA-Z]{2}$/', $region)) {
                 $region = strtoupper($region); // e.g., 'us' → 'US'
-            } elseif (preg_match('/^[0-9]{3}$/', $region)) {
-                $region = $region; // Keep digits as-is (e.g., '001', '419')
+            } elseif (preg_match('/^\d{3}$/', $region)) {
+                // 3-digit region codes are already valid as-is — no transformation needed
             } else {
                 // Ignore invalid region codes (fallback to no region)
                 $region = '';
