@@ -1,8 +1,9 @@
+ARG COMPOSER_VERSION=2.9
 ARG NODE_VERSION=24
 ARG BUILD_ENV=production
 
 # Stage 0: Install composer packages
-FROM composer:latest AS composer-installer
+FROM composer:${COMPOSER_VERSION} AS composer-installer
 
 ARG BUILD_ENV
 WORKDIR /app
