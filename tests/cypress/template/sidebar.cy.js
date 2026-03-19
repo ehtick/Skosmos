@@ -12,4 +12,30 @@ describe('Sidebar', () => {
     cy.get('#sidebar-tabs').find('.active').should('have.length', 1)
     cy.get('.tab-content').find('.active').should('have.length', 1)
   })
+
+  it('Contains collapse button on mobile', () => {
+    // Go to YSO home page
+    cy.visit('/yso/fi/')
+    // Check that collapse button is not visible and sidebar is visible
+    cy.get('#sidebar-collapse-btn').should('not.be.visible')
+    cy.get('#sidebar-col').should('be.visible')
+    // Change viewport size to mobile
+    cy.viewport(402, 874)
+    // Check that button is visible and contains correct text
+    cy.get('#sidebar-collapse-btn').should('be.visible')
+    cy.get('#sidebar-collapse-btn').invoke('text').should('contain', 'Selaa käsitteitä')
+    // Check that sidebar is not visible
+    cy.get('#sidebar-col').should('not.be.visible')
+    // Click button and check that it has correct text
+    cy.get('#sidebar-collapse-btn').click()
+    cy.get('#sidebar-collapse-btn').invoke('text').should('contain', 'Piilota käsitteet')
+    // Check that sidebar is visible
+    cy.get('#sidebar-col').should('be.visible')
+    // Click button again and check that everything is toggled correctly
+    cy.get('#sidebar-collapse-btn').click()
+    cy.get('#sidebar-collapse-btn').invoke('text').should('contain', 'Selaa käsitteitä')
+    cy.get('#sidebar-col').should('not.be.visible')
+
+
+  })
 })
