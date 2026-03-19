@@ -2,7 +2,7 @@ ARG COMPOSER_VERSION=2.9
 ARG NODE_VERSION=24
 ARG BUILD_ENV=production
 
-# Stage 0: Install composer packages
+# Stage 1: Install composer packages
 FROM composer:${COMPOSER_VERSION} AS composer-installer
 
 ARG BUILD_ENV
@@ -14,7 +14,7 @@ RUN composer install \
       --ignore-platform-req=php \
       $( [ "$BUILD_ENV" = "production" ] && echo "--no-dev" ) 
 
-# Stage 1: install Node dependencies
+# Stage 2: Install Node dependencies
 ARG NODE_VERSION
 FROM node:${NODE_VERSION}-alpine AS npm-installer
 
@@ -26,7 +26,7 @@ COPY package.json ./
 RUN npm install --ignore-scripts \
     $( [ "$BUILD_ENV" = "production" ] && echo "--omit=dev" )
 
-# Stage 2: runtime image
+# Stage 3: Build base runtime image
 FROM ubuntu:24.04 AS runtime
 
 LABEL maintainer="National Library of Finland"
@@ -99,6 +99,7 @@ EXPOSE 80
 
 CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
 
+# Stage 4a: Finalize development runtime image
 FROM runtime AS development
 
 # Install Node.js matching the version used in npm stages
@@ -136,6 +137,7 @@ COPY dockerfiles/config/config-docker.ttl /var/www/html/config.ttl
 # install cypress
 RUN npx cypress install
 
+# Stage 4b: Finalize production runtime image
 FROM runtime AS production
 
 # Composer vendors and Node modules from previous stages
