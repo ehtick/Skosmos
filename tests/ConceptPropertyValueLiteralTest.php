@@ -53,7 +53,7 @@ class ConceptPropertyValueLiteralTest extends PHPUnit\Framework\TestCase
         $concept = $vocab->getConceptInfo("http://www.skosmos.skos/date/d1", "en");
         $props = $concept->getProperties();
         $propvals = $props['http://www.skosmos.skos/date/ownDate']->getValues();
-        $this->assertStringContainsString('8/8/15', $propvals['8/8/15']->getLabel());
+        $this->assertStringContainsString('08/08/2015', $propvals['08/08/2015, 09:46']->getLabel());
     }
 
     /**

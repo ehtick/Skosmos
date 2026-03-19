@@ -202,7 +202,7 @@ class ConceptPropertyValueTest extends PHPUnit\Framework\TestCase
         $this->assertArrayHasKey('Source', $reified_vals);
         $this->assertEquals('https://en.wikipedia.org/wiki/Concept', $reified_vals['Source']->getLabel());
         $this->assertArrayHasKey('Last modified', $reified_vals);
-        $this->assertEquals('4/13/18', $reified_vals['Last modified']->getLabel());
+        $this->assertEquals('13/04/2018, 10:29', $reified_vals['Last modified']->getLabel());
     }
 
     private function getAssertedConceptRdfListPropertyValues($uri, $count)
