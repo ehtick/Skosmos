@@ -861,7 +861,8 @@ class Concept extends VocabularyDataObject implements Modifiable
                 }
             }
         }
-        uksort($groups, 'strcoll');
+        $collator = $this->model->getCollator();
+        uksort($groups, [$collator, 'compare']);
         return $groups;
     }
 
@@ -932,7 +933,8 @@ class Concept extends VocabularyDataObject implements Modifiable
                 unset($ret[$lang]);
             }
         }
-        uksort($ret, 'strcoll');
+        $collator = $this->model->getCollator();
+        uksort($ret, [$collator, 'compare']);
         return $ret;
     }
 

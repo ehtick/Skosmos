@@ -220,6 +220,7 @@ class ConceptTest extends PHPUnit\Framework\TestCase
      */
     public function testGetPropertiesAlphabeticalSortingOfPropertyValues()
     {
+        $this->model->setLang('fi'); // use Finnish collation order
         $vocab = $this->model->getVocabulary('collation');
         $concept = $vocab->getConceptInfo('http://www.skosmos.skos/collation/val0', 'fi');
         $props = $concept->getProperties();
