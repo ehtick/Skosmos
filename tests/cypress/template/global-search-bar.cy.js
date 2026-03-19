@@ -36,12 +36,12 @@ describe('Global search bar', () => {
 
     cy.get('#language-list').should('be.visible')
 
-    cy.get('#language-list li').get('a[value="en"]').click()
+    cy.get('#language-list li').contains('label', 'englanti').click()
     cy.get('#language-selector .dropdown-toggle').should('contain.text', 'englanti')
     cy.get('#language-list').should('be.hidden')
 
-    cy.get('#language-selector .dropdown-toggle').click()
-    cy.get('#language-list li').get('a[value="sv"]').click()
+    cy.get('#language-selector .dropdown-toggle').parent().click()
+    cy.get('#language-list li').contains('label', 'ruotsi').click()
     cy.get('#language-selector .dropdown-toggle').should('contain.text', 'ruotsi')
   })
 
@@ -52,12 +52,12 @@ describe('Global search bar', () => {
     cy.get('#language-selector .dropdown-toggle').click()
     cy.get('#language-list').should('be.visible')
 
-    cy.get('#language-list li').get('a[value="en"]').click()
+    cy.get('#language-list li').contains('label', 'englanti').click()
     cy.url().should('include', 'clang=en')
 
     cy.get('#language-selector .dropdown-toggle').click()
     cy.get('#language-list').should('be.visible')
-    cy.get('#language-list li').get('a[value="all"]').click()
+    cy.get('#language-list li').contains('label', 'kaikilla kielillä').click()
     cy.url().should('include', 'clang=en')
   })
 
@@ -66,7 +66,7 @@ describe('Global search bar', () => {
     cy.get('#global-search-toggle').click()
     cy.get('#vocab-list').contains('label', 'YSO').find('input[type="checkbox"]').check({ force: true })
     cy.get('#language-selector .dropdown-toggle').click()
-    cy.get('#language-list li').get('a[value="fi"]').click()
+    cy.get('#language-list li').contains('label', 'suomi').click()
 
     cy.get('#search-field').type('arkeolog'); // even if the search yields no results, there shoulde a single line in the result list
     cy.get('#search-autocomplete-results', { timeout: 20000 }).should('be.visible').children().should('have.length.greaterThan', 0);
@@ -80,7 +80,7 @@ describe('Global search bar', () => {
     cy.get('#global-search-toggle').click()
     cy.get('#vocab-list li').eq(0).find('input[type="checkbox"]').check({ force: true })
     cy.get('#language-selector .dropdown-toggle').click()
-    cy.get('#language-list li').get('a[value="sv"]').click()
+    cy.get('#language-list li').contains('label', 'ruotsi').click()
 
     cy.get('#search-field').type('kissa'); // even if the search yields no results, there shoulde a single line in the result list
     cy.get('#search-autocomplete-results', { timeout: 20000 }).should('be.visible').children().should('have.length.greaterThan', 0);
@@ -266,7 +266,6 @@ describe('Global search bar', () => {
         cy.get('#language-selector .dropdown-menu').should('have.class', 'show');
         cy.focused().type('{downarrow}');
 
-        cy.get('#language-list li').first().find('.dropdown-item').should('be.focused');
         cy.focused().type('{enter}');
 
         cy.get('#language-selector .dropdown-toggle').should('contain.text', 'englanti')

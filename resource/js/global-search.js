@@ -249,10 +249,60 @@ function startGlobalSearchApp () {
         this.renderedResultsList = []
         this.hideAutoComplete()
       },
+      onLangMenuKeydown (e) {
+        const items = Array.from(e.currentTarget.querySelectorAll('input'))
+        console.log('Lang menu key')
+        // prevent Bootstrap native radio button arrow left /arrow right behavior
+        if (!items.length) return
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+          e.stopPropagation()
+          return
+        }
+        const currentIndex = items.indexOf(document.activeElement)
+
+        const focusAt = (newIndex) => {
+          const i = (newIndex + items.length) % items.length
+          items[i].focus()
+        }
+
+        switch (e.key) {
+          case 'ArrowUp':
+            if (currentIndex === 0) {
+              const dropdownWrapper = e.currentTarget.closest('.dropdown')
+              const btn = dropdownWrapper.querySelector('.dropdown-toggle')
+              const dropdownBtn = bootstrap.Dropdown.getOrCreateInstance(btn)
+              dropdownBtn.hide()
+              btn.focus()
+            }
+            break
+          case 'Enter': {
+            e.preventDefault()
+            items[currentIndex].parentElement.click()
+            const btn = e.delegateTarget.parentElement.querySelector('.dropdown-toggle')
+            btn.focus()
+            break
+          }
+          case 'Home':
+            e.preventDefault()
+            focusAt(0)
+            break
+          case 'End':
+            e.preventDefault()
+            focusAt(items.length - 1)
+            break
+          case 'Escape': {
+            e.preventDefault()
+            const btn = e.delegateTarget.parentElement.querySelector('.dropdown-toggle')
+            const dropdownBtn = bootstrap.Dropdown.getInstance(btn)
+            dropdownBtn.toggle()
+            btn.focus()
+            break
+          }
+        }
+      },
       onVocabMenuKeydown (e) {
         const items = Array.from(e.currentTarget.querySelectorAll('input'))
         if (!items.length) return
-
         let currentIndex = items.indexOf(document.activeElement)
 
         if (currentIndex === -1) {
@@ -401,22 +451,21 @@ function startGlobalSearchApp () {
           </button>
           <ul
             class="dropdown-menu"
+            @keydown="onLangMenuKeydown"
             id="language-list"
             role="menu">
-            <li
-              v-for="(value, key, index) in languageStrings"
-              :key="key"
-              role="none">
-              <a
-                class="dropdown-item"
-                :value="key"
-                role="menuitem"
-                @click="changeLang(key)"
-                @keydown.enter="changeLang(key)"
-                @keydown.space.prevent.stop="changeLang(key)"
-                tabindex=0 >
+            <li v-for="(value, key) in languageStrings" :key="key" role="none" tabindex=-1>
+              <label class="dropdown-item">
+                <input
+                  type="radio"
+                  :value="key"
+                  tabindex=-1
+                  @keydown.left.prevent
+                  @keydown.right.prevent
+                  @click.stop
+                  v-model="selectedLanguage">
                 {{ value }}
-              </a>
+              </label>
             </li>
           </ul>
         </div>
