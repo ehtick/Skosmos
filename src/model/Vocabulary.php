@@ -199,9 +199,19 @@ class Vocabulary extends DataObject implements Modifiable
                 foreach ($conceptscheme->allLiterals($prop, null) as $val) {
                     $prop = (substr($prop, 0, 5) == 'dc11:') ? str_replace('dc11:', 'dc:', $prop) : $prop;
                     if ($val->getValue() instanceof DateTime) {
-                        $dateTimeHelper = $this->model->getDateTimeHelper();
+                        $localeLabel = $this->model->getLocale();
+                        $locale = $this->model->getConfig()->getLanguages()[$localeLabel];
+                        // Collation suffix in locale is not supported by IntlDateFormatter
+                        // so this is removed to ensure proper local formatting
+                        $locale = preg_replace('/\.[\w\d]+$/', '', $locale);
+                        $dateFormatter = new IntlDateFormatter(
+                            $locale,
+                            IntlDateFormatter::FULL,
+                            IntlDateFormatter::FULL,
+                            $this->model->getConfig()->getTimezone(),
+                        );
                         // Use interface language for date formatting, not content language
-                        $val = ucfirst($dateTimeHelper->formatDateTime($val->getValue(), 'full', $this->getLang()));
+                        $val = ucfirst($dateFormatter->format($val->getValue()));
                     }
                     $ret[$prop][] = $val;
                 }

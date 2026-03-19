@@ -5,7 +5,6 @@
  */
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\Loader\JsonFileLoader;
-use Util\DateTimeHelper;
 
 /**
  * Model provides access to the data.
@@ -45,7 +44,6 @@ class Model
             $this->translator->addResource('json', __DIR__.'/../../resource/translations/messages.' . $langcode . '.json', $langcode);
         }
         $this->initializeLogging();
-        $this->initializeDateTimeHelper();
     }
 
     /**
@@ -80,24 +78,6 @@ class Model
             $nullHandler = new \Monolog\Handler\NullHandler();
             $this->logger->pushHandler($nullHandler);
         }
-    }
-
-    /**
-     * Initializes the DateTimeHelper with the configured timezone from GlobalConfig.
-     */
-    private function initializeDateTimeHelper()
-    {
-        $timezone = $this->getConfig()->getTimezone();
-        $this->dateTimeHelper = new DateTimeHelper($timezone, $this->getConfig());
-    }
-
-    /**
-     * Return the DateTimeHelper instance
-     * @return DateTimeHelper
-     */
-    public function getDateTimeHelper()
-    {
-        return $this->dateTimeHelper;
     }
 
     /**
