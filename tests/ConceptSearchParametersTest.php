@@ -7,9 +7,6 @@ class ConceptSearchParametersTest extends PHPUnit\Framework\TestCase
 
     protected function setUp(): void
     {
-        putenv("LANGUAGE=en_GB.utf8");
-        putenv("LC_ALL=en_GB.utf8");
-        setlocale(LC_ALL, 'en_GB.utf8');
         $this->request = $this->getMockBuilder('Request')->disableOriginalConstructor()->getMock();
         $this->model = new Model();
     }

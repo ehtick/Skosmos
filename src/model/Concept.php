@@ -921,7 +921,7 @@ class Concept extends VocabularyDataObject implements Modifiable
 
         $langArray = array_keys($ret);
         foreach ($langArray as $lang) {
-            $coll = collator_create($lang);
+            $coll = ($lang !== '') ? new Collator($lang) : $this->model->getCollator();
             if (isset($ret[$lang]['prefLabel'])) {
                 $coll->sort($ret[$lang]['prefLabel'], Collator::SORT_STRING);
             }
