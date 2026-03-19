@@ -504,7 +504,7 @@ class VocabularyTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetShortNameLang()
     {
-        $this->model->setLocale('fi');
+        $this->model->setLang('fi');
         $vocab = $this->model->getVocabulary('test');
         $this->assertEquals('Testi lyhyt', $vocab->getShortName());
     }

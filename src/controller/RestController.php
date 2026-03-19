@@ -64,7 +64,7 @@ class RestController extends Controller
             return $this->returnError(400, "Bad Request", "lang parameter missing");
         }
 
-        $this->model->setLocale($request->getLang());
+        $this->model->setLang($request->getLang());
 
         $vocabs = array();
         foreach ($this->model->getVocabularies() as $voc) {
@@ -259,7 +259,7 @@ class RestController extends Controller
         if ($this->notModified($request->getVocab())) {
             return null;
         }
-        $this->model->setLocale($request->getLang());
+        $this->model->setLang($request->getLang());
         $arrayClass = $request->getVocab()->getConfig()->getArrayClassURI();
         $groupClass = $request->getVocab()->getConfig()->getGroupClassURI();
         $queryLang = $request->getQueryParam('lang') ?? $request->getLang();
@@ -338,7 +338,7 @@ class RestController extends Controller
             return null;
         }
         $lang = $request->getLang();
-        $this->model->setLocale($request->getLang());
+        $this->model->setLang($request->getLang());
         $vocabStats = $request->getVocab()->getLabelStatistics();
 
         /* encode the results in a JSON-LD compatible array */
@@ -398,7 +398,7 @@ class RestController extends Controller
             return null;
         }
 
-        $this->model->setLocale($request->getLang());
+        $this->model->setLang($request->getLang());
 
         $queriedtypes = $this->model->getTypes($vocid, $request->getLang());
 
@@ -687,7 +687,7 @@ class RestController extends Controller
      */
     public function mappings(Request $request)
     {
-        $this->model->setLocale($request->getLang());
+        $this->model->setLang($request->getLang());
         $vocab = $request->getVocab();
         if ($this->notModified($vocab)) {
             return null;
@@ -773,7 +773,7 @@ class RestController extends Controller
 
     public function indexLetters($request)
     {
-        $this->model->setLocale($request->getLang());
+        $this->model->setLang($request->getLang());
         $letters = $request->getVocab()->getAlphabet($request->getLang());
 
         $ret = array_merge_recursive(
@@ -801,7 +801,7 @@ class RestController extends Controller
 
     public function indexConcepts($letter, $request)
     {
-        $this->model->setLocale($request->getLang());
+        $this->model->setLang($request->getLang());
 
         $offset_param = $request->getQueryParam('offset');
         $offset = (is_numeric($offset_param) && $offset_param >= 0) ? $offset_param : 0;

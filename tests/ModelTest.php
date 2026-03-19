@@ -634,11 +634,11 @@ test:ta125
 
     /**
      * @covers Model::getText
-     * @covers Model::setLocale
+     * @covers Model::setLang
      */
     public function testGetText()
     {
-        $this->model->setLocale('fi');
+        $this->model->setLang('fi');
         $this->assertEquals('Luotu', $this->model->getText('skosmos:created'));
     }
 

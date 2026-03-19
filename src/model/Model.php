@@ -204,19 +204,20 @@ class Model
     }
 
     /**
-     * Sets translation language for Symfony Translator objext
-     * @param string $lang two character language code 'fi' or compound language (locale) name such as 'fi_FI'
+     * Set language for user interface internationalization (translations, collation etc.)
+     * @param string $lang language code defined in configuration, e.g. 'fi' or 'en-GB'
      */
-    public function setLocale($locale)
+    public function setLang($lang)
     {
-        $this->translator->setlocale($locale);
+        // Symfony Translator uses the short language codes as locale id's
+        $this->translator->setlocale($lang);
     }
 
     /**
-     * Gets translation language from Symfony Translator objext
-     * @return string $lang two character language code 'fi' or compound language (locale) name such as 'fi_FI'
+     * Get language for user interface internationalization (translations, collation etc.)
+     * @return string $lang language code defined in configuration, e.g. 'fi' or 'en-GB'
      */
-    public function getLocale()
+    public function getLang()
     {
         return $this->translator->getlocale();
     }
