@@ -26,17 +26,20 @@
   --headerbar-bg-2: var(--white-color);
   --headerbar-text: var(--dark-color);
 
-  --search-field-bg: var(--white-color);
-  --search-dropdown-bg: var(--secondary-light-color);
+  --search-autocomplete-result-link: var(--medium-color);
   --search-border: var(--light-color);
+  --search-keyboard-nav-border: var(--dark-color);
   --search-button-bg: var(--dark-color);
   --search-button-text: var(--white-color);
+  --search-dropdown-bg: var(--secondary-light-color);
+  --search-dropdown-selected-bg: var(--dark-color);
+  --search-dropdown-hover-bg: var(--dark-color);
+  --search-dropdown-hover-text: var(--white-color);
+  --search-dropdown-selected-text: var(--white-color);
+  --search-field-bg: var(--white-color);
   --search-hover-bg: var(--light-color);
-  --vocab-search-language-dropdown-hover-bg: var(--dark-color);
-  --vocab-search-language-dropdown-hover-text: var(--white-color);
-  --global-search-vocab-selector-selected-bg: var(--dark-color);
   --global-search-vocab-selector-check: var(--white-color);
-  --search-autocomplete-result-link: var(--medium-color);
+
 
   --main-bg-1: var(--white-color); /*landing*/
   --main-bg-2: var(--light-color); /*vocab, concept, search, error*/
@@ -274,8 +277,12 @@ header .container-fluid .row {
   overflow-x: hidden; /* prevent horizontal scrollbar in chrome */
 }
 
-#search-wrapper .dropdown-menu label, #search-wrapper .dropdown-menu a {
+#search-wrapper .dropdown-menu label {
   color: var(--headerbar-text);
+}
+
+#search-wrapper .dropdown-menu li label:hover {
+  color: var(--search-dropdown-hover-text);
 }
 
 #search-wrapper .dropdown-toggle {
@@ -310,19 +317,8 @@ header .container-fluid .row {
 
 /* Language selector  */
 
-#language-list li:hover a, #language-list li:active a {
-  color: var(--vocab-search-language-dropdown-hover-text);
-  background-color: var(--vocab-search-language-dropdown-hover-bg);
-}
-
-#language-list li:hover label, #language-list li:active label {
-  background-color: var(--search-hover-bg);
-}
-
-#language-list li:has(input:checked) label {
-  background-color: var(--search-button-bg);
-  color: var(--search-button-text);
-  font-weight: bold;
+#language-list li:hover, #language-list li:active {
+  background-color: var(--search-dropdown-hover-bg);
 }
 
 /* Search field */
@@ -407,12 +403,6 @@ header .container-fluid .row {
 
 /* Vocabulary selector */
 
-#search-wrapper #vocab-list {
-  padding-top: 0.25rem;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
-
 #search-wrapper .vocab-dropdown-btn {
   width: 15rem;
   position: relative;
@@ -436,20 +426,36 @@ header .container-fluid .row {
   user-select: none;
 }
 
-/* Custom checkbox */
+#vocab-list {
+  padding-top: 0.25rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
 
-#search-wrapper .vocab-select input {
+/* Language selector & Vocabulary selector */
+
+#search-wrapper #vocab-list, #search-wrapper #language-list {
+  --bs-dropdown-link-hover-bg: transparent;
+}
+
+#search-wrapper #vocab-selector input, #search-wrapper #language-selector input {
   position: absolute;
   opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
 }
+
+#search-wrapper #language-selector .dropdown-menu {
+  --bs-dropdown-link-active-bg: var(--search-dropdown-selected-bg);
+}
+
+#search-wrapper #language-selector .dropdown-item:active {
+  color: var(--search-dropdown-selected-text);
+}
+
+/* Custom checkbox */
 
 #search-wrapper .checkmark {
   position: absolute;
-  border: 1px solid var(--global-search-vocab-selector-selected-bg);
-  top: 0;
+  border: 1px solid var(--search-dropdown-selected-bg);
   left: 0;
   height: 1.5rem;
   width: 1.5rem;
@@ -472,15 +478,27 @@ header .container-fluid .row {
 }
 
 #search-wrapper .vocab-select:hover input ~ .checkmark {
-  background-color: var(--global-search-vocab-selector-selected-bg);
+  background-color: var(--search-dropdown-selected-bg);
 }
 
 #search-wrapper .vocab-select input:checked ~ .checkmark {
-  background-color: var(--global-search-vocab-selector-selected-bg);
+  background-color: var(--search-dropdown-selected-bg);
 }
 
 #search-wrapper .vocab-select input:checked ~ .checkmark::after {
   display: block;
+}
+
+/* Show a visible focus ring when focus is moved with keyboard navigation */
+
+#search-wrapper #vocab-list .vocab-select:focus-within {
+  outline: 2px solid var(--search-keyboard-nav-border);
+  outline-offset: 2px;
+}
+
+#search-wrapper #language-list .dropdown-item:focus-within {
+  outline: 2px solid var(--search-keyboard-nav-border);
+   outline-offset: -3px;
 }
 
 /* Search field */
