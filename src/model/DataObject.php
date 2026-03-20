@@ -127,12 +127,12 @@ class DataObject
     }
 
     /**
-     * Getter function to retrieve the ui language from Symfony translator.
+     * Getter function to retrieve the UI language.
      */
     public function getLang()
     {
         if (!is_null($this->model)) {
-            return $this->model->getLocale();
+            return $this->model->getLang();
         }
     }
 

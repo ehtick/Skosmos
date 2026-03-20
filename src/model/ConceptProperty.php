@@ -116,17 +116,18 @@ class ConceptProperty
 
     private function sortValues()
     {
+        $collator = $this->model->getCollator();
         # TODO: sort by URI as last resort
         # Note that getLabel() returns URIs in case of no label and may return a prefixed value which affects sorting
         if (!empty($this->values)) {
             if ($this->sort_by_notation) {
-                uasort($this->values, function ($a, $b) {
+                uasort($this->values, function ($a, $b) use ($collator) {
                     $anot = $a->getNotation();
                     $bnot = $b->getNotation();
                     if ($anot == null) {
                         if ($bnot == null) {
                             // assume that labels are unique
-                            return strcoll(strtolower($a->getLabel()), strtolower($b->getLabel()));
+                            return $collator->compare($a->getLabel(), $b->getLabel());
                         }
                         return 1;
                     } elseif ($bnot == null) {
@@ -134,16 +135,16 @@ class ConceptProperty
                     } else {
                         // assume that notations are unique, choose strategy
                         if ($this->sort_by_notation == "lexical") {
-                            return strcoll($anot, $bnot);
+                            return $collator->compare($anot, $bnot);
                         } else { // natural
                             return strnatcasecmp($anot, $bnot);
                         }
                     }
                 });
             } else {
-                uasort($this->values, function ($a, $b) {
+                uasort($this->values, function ($a, $b) use ($collator) {
                     // assume that sort keys are unique
-                    return strcoll($a->getSortKey(), $b->getSortKey());
+                    return $collator->compare($a->getSortKey(), $b->getSortKey());
                 });
             }
         }

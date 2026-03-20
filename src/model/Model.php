@@ -123,6 +123,7 @@ class Model
      */
     public function getVocabularyList($categories = true, $shortname = false)
     {
+        $collator = $this->getCollator();
         $cats = $this->getVocabularyCategories();
         $ret = array();
         foreach ($cats as $cat) {
@@ -133,7 +134,7 @@ class Model
             foreach ($cat->getVocabularies() as $voc) {
                 $vocs[$shortname ? $voc->getConfig()->getShortname() : $voc->getConfig()->getTitle()] = $voc;
             }
-            uksort($vocs, 'strcoll');
+            uksort($vocs, [$collator, 'compare']);
 
             if (sizeof($vocs) > 0 && $categories) {
                 $ret[$catlabel] = $vocs;
@@ -144,7 +145,7 @@ class Model
         }
 
         if (!$categories) {
-            uksort($ret, 'strcoll');
+            uksort($ret, [$collator, 'compare']);
         }
 
         return $ret;
@@ -204,25 +205,45 @@ class Model
     }
 
     /**
-     * Sets translation language for Symfony Translator objext
-     * @param string $lang two character language code 'fi' or compound language (locale) name such as 'fi_FI'
+     * Return Collator object for the current language.
+     * @return Collator Collator object from intl extension
      */
-    public function setLocale($locale)
+    public function getCollator()
     {
-        $this->translator->setlocale($locale);
+        return new Collator($this->getLocale());
     }
 
     /**
-     * Gets translation language from Symfony Translator objext
-     * @return string $lang two character language code 'fi' or compound language (locale) name such as 'fi_FI'
+     * Set language for user interface internationalization (translations, collation etc.)
+     * @param string $lang language code defined in configuration, e.g. 'fi' or 'en'
      */
-    public function getLocale()
+    public function setLang($lang)
+    {
+        // Symfony Translator uses the short language codes as locale id's
+        $this->translator->setlocale($lang);
+    }
+
+    /**
+     * Get language for user interface internationalization (translations, collation etc.)
+     * @return string language code defined in configuration, e.g. 'fi' or 'en'
+     */
+    public function getLang()
     {
         return $this->translator->getlocale();
     }
 
     /**
-     * Get text translated in language set by SetLocale function
+     * Get specific BCP47 locale for user interface internationalization (translations, collation etc.)
+     * @return string locale defined in configuration, e.g. 'fi-FI' or 'en-GB'
+     */
+    public function getLocale()
+    {
+        $lang = $this->getLang();
+        return $this->globalConfig->getLanguages()[$lang];
+    }
+
+    /**
+     * Get text translated into UI language
      *
      * @param string $text text to be translated
      */

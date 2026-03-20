@@ -176,9 +176,68 @@ class GlobalConfig extends BaseConfig
         }
     }
 
+
+    /**
+     * Converts a system locale string (e.g., Linux-style) to a BCP 47 compliant locale tag.
+     * For backward compatibility with older Skosmos versions (pre 3.2), where system locale
+     * names were used in the configuration file.
+     *
+     * Supports common variations such as:
+     * - Underscore or hyphen separators (`en_US`, `en-US`)
+     * - Encoding suffixes (`.utf8`, `.UTF-8`, `.iso8859-1`, etc.)
+     * - Additional annotations (`@euro`)
+     *
+     * The resulting BCP 47 tag follows the minimal structure: `language[-region]`.
+     * Language codes are preserved as-is (e.g., `fa`, `sr`, `ast`, `zh`), and region codes
+     * are normalized to uppercase 2-letter ISO 3166-1 alpha-2 (or valid 3-letter extensions like `015`).
+     *
+     * Note: This method does *not* attempt full validation against IANA language subtag registry.
+     * It assumes typical system locales used in Linux environments and is optimized for compatibility
+     * with PHP's `intl` extension and the Punic library.
+     *
+     * @param string $locale The locale string to convert (e.g., `en_US.UTF-8`, `fa-IR`, `de_AT@euro`).
+     * @return string The BCP 47 locale tag, or `'und'` if input is invalid/empty.
+     */
+    public function systemLocaleToBCP47(string $locale): string
+    {
+        // Normalize: replace hyphens with underscores, lowercase, strip encoding suffix
+        $normalized = strtolower(str_replace('-', '_', $locale));
+
+        // Remove common encodings/suffixes like .utf8, @euro, etc.
+        $normalized = preg_replace('/\.(utf|utf8|utf-8|ascii|iso.*)$/i', '', $normalized);
+        $normalized = preg_replace('/@.+$/i', '', $normalized); // e.g., @euro
+
+        // Split into language and territory parts
+        $parts = explode('_', $normalized, 3);
+
+        $lang = $parts[0] ?? '';
+        $region = $parts[1] ?? '';
+
+        // Normalize language: ensure it's not empty or too long (>8 chars is invalid)
+        if ($lang === '' || strlen($lang) > 8) {
+            return 'und'; // Undetermined
+        }
+
+        // Normalize region: support 2-letter (ISO 3166), 3-digit (UN M.49), or 3-letter (script/variant)
+        // Valid BCP 47 region subtags: [a-zA-Z]{2} OR [0-9]{3}
+        if ($region !== '') {
+            if (preg_match('/^[a-zA-Z]{2}$/', $region)) {
+                $region = strtoupper($region); // e.g., 'us' → 'US'
+            } elseif (preg_match('/^\d{3}$/', $region)) {
+                // 3-digit region codes are already valid as-is — no transformation needed
+            } else {
+                // Ignore invalid region codes (fallback to no region)
+                $region = '';
+            }
+        }
+
+        // Build BCP 47 tag: language[-region]
+        return $lang . ($region !== '' ? '-' . $region : '');
+    }
+
     /**
      * Returns the UI languages specified in the configuration or defaults to
-     * only show English
+     * only show GB English
      * @return array
      */
     public function getLanguages()
@@ -192,12 +251,13 @@ class GlobalConfig extends BaseConfig
                 /** @var \EasyRdf\Literal $languageValue */
                 $languageValue = $languageResource->getLiteral('rdf:value');
                 if ($languageName && $languageValue) {
-                    $languages[$languageName->getValue()] = $languageValue->getValue();
+                    $bcp47locale = $this->systemLocaleToBCP47($languageValue->getValue());
+                    $languages[$languageName->getValue()] = $bcp47locale;
                 }
             }
             return $languages;
         } else {
-            return array('en' => 'en_GB.utf8');
+            return array('en' => 'en-GB');
         }
     }
 

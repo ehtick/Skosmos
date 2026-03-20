@@ -46,7 +46,7 @@ class ConceptPropertyValue extends VocabularyDataObject
 
     public function getLang()
     {
-        return $this->model->getLocale();
+        return $this->model->getLang();
     }
 
     public function getSortKey()

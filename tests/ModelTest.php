@@ -7,9 +7,6 @@ class ModelTest extends PHPUnit\Framework\TestCase
 
     protected function setUp(): void
     {
-        putenv("LANGUAGE=en_GB.utf8");
-        putenv("LC_ALL=en_GB.utf8");
-        setlocale(LC_ALL, 'en_GB.utf8');
         $this->model = new Model();
         $this->params = $this->getMockBuilder('ConceptSearchParameters')->disableOriginalConstructor()->getMock();
         $this->params->method('getVocabIds')->will($this->returnValue(array('test')));
@@ -634,11 +631,11 @@ test:ta125
 
     /**
      * @covers Model::getText
-     * @covers Model::setLocale
+     * @covers Model::setLang
      */
     public function testGetText()
     {
-        $this->model->setLocale('fi');
+        $this->model->setLang('fi');
         $this->assertEquals('Luotu', $this->model->getText('skosmos:created'));
     }
 
