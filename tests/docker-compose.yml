@@ -8,6 +8,12 @@ services:
       file: ../docker-compose.yml
       service: fuseki-cache
   skosmos:
+    build:
+      context: ..
+      dockerfile: dockerfiles/Dockerfile.ubuntu
+      target: development
+      args:
+        BUILD_ENV: development
     extends:
       file: ../docker-compose.yml
       service: skosmos
