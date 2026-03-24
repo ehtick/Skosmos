@@ -25,7 +25,6 @@ class Model
     private $logger;
     private $resolver;
     private $translator;
-    private $dateTimeHelper;
 
     /**
      * Initializes the Model object
