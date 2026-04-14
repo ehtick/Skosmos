@@ -375,7 +375,13 @@ function startVocabSearchApp () {
             </li>
           </ul>
         </span>
-        <button id="clear-button" class="btn btn-danger" type="clear" v-if="searchTerm" :aria-label="clearSearchButtonAriaMessage" @click="resetSearchTermAndHideDropdown()">
+        <button
+          id="clear-button"
+          class="btn btn-danger"
+          type="clear"
+          v-if="searchTerm"
+          :aria-label="clearSearchButtonAriaMessage"
+          @click="resetSearchTermAndHideDropdown()">
           <i class="fa-solid fa-xmark"></i>
         </button>
         <button id="search-button" class="btn btn-outline-secondary" :aria-label="searchAriaMessage" @click="gotoSearchPage()">
