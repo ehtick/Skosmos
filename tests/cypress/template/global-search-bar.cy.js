@@ -96,8 +96,13 @@ describe('Global search bar', () => {
       cy.get('#search-field').type('kas');
       cy.get('#search-autocomplete-results', { timeout: 20000 }).should('be.visible'); // the autocomplete should appear
 
+      cy.get('#clear-button').should('have.attr', 'aria-label', 'Clear search field'); // the clear search button should have an aria label
+
       cy.get('#clear-button').click()
       cy.get('#search-autocomplete-results').should('not.be.visible'); // the autocomplete should disappear
+
+      // check that the focus is moved to the search field
+      cy.get('#search-field').should('be.focused')
     })
 
     it('Emptying the text search field hides the autocomplete list', () => {
