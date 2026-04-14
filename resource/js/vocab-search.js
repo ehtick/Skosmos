@@ -32,6 +32,9 @@ function startVocabSearchApp () {
       },
       searchAriaMessage () {
         return $t('Search')
+      },
+      clearSearchButtonAriaMessage () {
+        return $t('Clear search field')
       }
     },
     mounted () {
@@ -232,6 +235,10 @@ function startVocabSearchApp () {
         this.searchTerm = ''
         this.renderedResultsList = []
         this.hideAutoComplete()
+
+        this.$nextTick(() => {
+          this.$refs.searchInputField.focus()
+        })
       },
       /*
       * Show the existing autocomplete list if it was hidden by onClickOutside()
@@ -271,6 +278,7 @@ function startVocabSearchApp () {
 
         <span id="headerbar-search" class="dropdown">
           <input type="search"
+            ref="searchInputField"
             class="form-control"
             id="search-field"
             autocomplete="off"
@@ -367,7 +375,7 @@ function startVocabSearchApp () {
             </li>
           </ul>
         </span>
-        <button id="clear-button" class="btn btn-danger" type="clear" v-if="searchTerm" @click="resetSearchTermAndHideDropdown()">
+        <button id="clear-button" class="btn btn-danger" type="clear" v-if="searchTerm" :aria-label="clearSearchButtonAriaMessage" @click="resetSearchTermAndHideDropdown()">
           <i class="fa-solid fa-xmark"></i>
         </button>
         <button id="search-button" class="btn btn-outline-secondary" :aria-label="searchAriaMessage" @click="gotoSearchPage()">

@@ -143,6 +143,9 @@ describe('Vocab search bar', () => {
 
       cy.get('#clear-button').click()
       cy.get('#search-autocomplete-results').should('not.be.visible'); // the autocomplete should disappear
+
+      // check that the focus is moved to the search field
+      cy.get('#search-field').should('be.focused')
     })
 
     it('Emptying the text search field hides the autocomplete list', () => {
