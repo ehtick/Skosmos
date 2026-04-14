@@ -7,7 +7,7 @@
         {{ "This concept has been deprecated." | trans }}
         {% set replacedByValues = concept.isReplacedBy %}
         {% if replacedByValues %}
-          {{ "dc:isReplacedBy" | trans }}:
+          {{ "See" | trans }}:
           <ul class="list-inline d-inline">
           {% for val in replacedByValues %}
             <li class="list-inline-item me-0"><a href="{{ val.uri | link_url(val.vocab, request.lang, 'page', request.contentLang) }}">{{ val.label }}</a></li>
