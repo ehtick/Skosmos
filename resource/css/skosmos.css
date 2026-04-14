@@ -726,7 +726,7 @@ header .container-fluid .row {
     position: relative;
   }
 
-  #sidebar-tabs.wide .nav-item:last-of-type .nav-link::after {
+  #sidebar-tabs.wide .nav-item:last-of-type::after {
     content: "";
     position: absolute;
     top: 0;
@@ -737,7 +737,7 @@ header .container-fluid .row {
     background: linear-gradient(to right, transparent, var(--sidebar-tab-inactive-bg));
   }
 
-  #sidebar-tabs.wide .nav-item:last-of-type .nav-link.active::after {
+  #sidebar-tabs.wide .nav-item:last-of-type:has(.nav-link.active)::after {
     background: linear-gradient(to right, transparent, var(--sidebar-tab-active-bg));
   }
 }
@@ -1053,7 +1053,7 @@ h1#vocab-heading {
 #main-container .property-label h2 {
   font-family: var(--font-family);
   font-size: 1.2rem;
-  display: inline;
+  display: inline-block;
 }
 
 .property-value {
@@ -1238,7 +1238,8 @@ h1#vocab-heading {
 .tooltip-inline {
   position: relative;
   width: fit-content;
-  border-bottom: 2px dotted var(--secondary-medium-color);
+  text-decoration: var(--secondary-medium-color) underline dotted 2px;
+  text-underline-offset: 5px;
 }
 
 .tooltip-inline::before {
