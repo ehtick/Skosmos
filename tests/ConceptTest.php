@@ -317,6 +317,7 @@ class ConceptTest extends PHPUnit\Framework\TestCase
 
     /**
      * @covers Concept::getDate
+     * @covers Concept::getFormattedDateResource
      */
     public function testGetDateWithCreatedAndModified()
     {
@@ -329,6 +330,7 @@ class ConceptTest extends PHPUnit\Framework\TestCase
 
     /**
      * @covers Concept::getDate
+     * @covers Concept::getFormattedDateResource
      * @covers ConceptProperty::getValues
      * @covers ConceptPropertyValueLiteral::getLabel
      */
@@ -368,6 +370,7 @@ class ConceptTest extends PHPUnit\Framework\TestCase
 
     /**
      * @covers Concept::getDate
+     * @covers Concept::getFormattedDateResource
      * Test that dates without time component (midnight 00:00:00) don't display time
      */
     public function testGetDateWithoutTimeComponent()
@@ -383,7 +386,8 @@ class ConceptTest extends PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Concept::getDate
+     * @covers 
+     * @covers Concept::getFormattedDateResource
      * Test that dates with time component (non-midnight) display time
      */
     public function testGetDateWithTimeComponent()
@@ -399,7 +403,8 @@ class ConceptTest extends PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers Concept::getDate
+     * @covers 
+     * @covers Concept::getFormattedDateResource
      * Test that dates are converted to UTC timezone in tests
      */
     public function testGetDateTimezoneConversion()
@@ -415,6 +420,7 @@ class ConceptTest extends PHPUnit\Framework\TestCase
 
     /**
      * @covers Concept::getDate
+     * @covers Concept::getFormattedDateResource
      * Test that dates are displayed in the correct interface language
      */
     public function testGetDateInterfaceLanguage()
