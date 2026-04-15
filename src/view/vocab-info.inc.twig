@@ -1,5 +1,7 @@
 <div class="col-md-8">
-  <div id="main-content-top-slot"></div>
+  <div id="main-content-top-slot">
+    {{ include('custom-templates.inc.twig', {slotName: 'main-content-top'}) }}
+  </div>
   <div id="main-content">
     <div class="main-content-section py-4">
       <h1 id="vocab-heading">{{ "Vocabulary information" | trans }}</h1>
@@ -86,5 +88,7 @@
     <div id="concept-mappings">
     </div>
   </div>
-  <div id="main-content-bottom-slot"></div>
+  <div id="main-content-bottom-slot">
+    {{ include('custom-templates.inc.twig', {slotName: 'main-content-bottom'}) }}
+  </div>
 </div>

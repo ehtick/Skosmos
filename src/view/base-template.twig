@@ -90,7 +90,9 @@
     {% endif %}
     {% if pageType in ['landing', 'vocab-home', 'concept', 'vocab-search'] %}
     <div class="container-fluid py-4" id="headerbar">
-      <div id="headerbar-top-slot" class="row"></div>
+      <div id="headerbar-top-slot" class="row">
+        {{ include('custom-templates.inc.twig', {slotName: 'headerbar-top'}) }}
+      </div>
       <div class="row">
         <div class="d-flex flex-column flex-xl-row align-items-start align-items-xl-center my-auto{% if pageType == 'landing' %} p-0{% endif %}">
           {% if pageType == 'landing' %}
@@ -109,7 +111,9 @@
           {% endif %}
         </div>
       </div>
-      <div id="headerbar-bottom-slot" class="row"></div>
+      <div id="headerbar-bottom-slot" class="row">
+        {{ include('custom-templates.inc.twig', {slotName: 'headerbar-bottom'}) }}
+      </div>
     </div>
     
     {% endif %}
