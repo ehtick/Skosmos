@@ -24,9 +24,10 @@
 <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" media="screen, print" rel="stylesheet" type="text/css">
 <link href="resource/css/fonts.css" media="screen, print" rel="stylesheet" type="text/css">
 <link href="resource/css/skosmos.css" media="screen, print" rel="stylesheet" type="text/css">
-<link href="resource/fontawesome/css/fontawesome.css" rel="stylesheet">
-<link href="resource/fontawesome/css/solid.css" rel="stylesheet">
-<link href="resource/fontawesome/css/regular.css" rel="stylesheet">
+<link href="node_modules/@fortawesome/fontawesome-free/css/fontawesome.min.css" rel="stylesheet">
+<link href="node_modules/@fortawesome/fontawesome-free/css/brands.min.css" rel="stylesheet">
+<link href="node_modules/@fortawesome/fontawesome-free/css/solid.min.css" rel="stylesheet">
+<link href="node_modules/@fortawesome/fontawesome-free/css/regular.min.css" rel="stylesheet">
 {% if GlobalConfig.customCss %}
 <link href="{{ GlobalConfig.customCss }}" media="screen, print" rel="stylesheet" type="text/css">
 {% endif %}
@@ -129,7 +130,7 @@
       </div>
     </div>
   </main>
-  <footer class="py-5">
+  <footer>
   {{ include('custom-templates.inc.twig', {slotName: 'footer'}) }}
   </footer>
   {% include "scripts.inc.twig" %}
