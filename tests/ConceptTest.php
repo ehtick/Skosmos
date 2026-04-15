@@ -449,7 +449,7 @@ class ConceptTest extends PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers 
+     * @covers Concept::getDate 
      * Test that dates with time component (non-midnight) display time
      */
     public function testGetDateWithTimeComponent()
@@ -465,7 +465,7 @@ class ConceptTest extends PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers 
+     * @covers Concept::getDate
      * Test that dates are converted to UTC timezone in tests
      */
     public function testGetDateTimezoneConversion()
