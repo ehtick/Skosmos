@@ -141,6 +141,8 @@ describe('Vocab search bar', () => {
       cy.get('#search-field').type('kas');
       cy.get('#search-autocomplete-results', { timeout: 20000 }).should('be.visible'); // the autocomplete should appear
 
+      cy.get('#clear-button').should('have.attr', 'aria-label', 'Clear search field'); // the clear search button should have an aria label
+
       cy.get('#clear-button').click()
       cy.get('#search-autocomplete-results').should('not.be.visible'); // the autocomplete should disappear
 
