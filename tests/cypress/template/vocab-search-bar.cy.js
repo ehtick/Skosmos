@@ -289,11 +289,11 @@ describe('Vocab search bar', () => {
       // Check that language selector has correct Aria label
       cy.get('#language-selector button').should('have.attr', 'aria-label', 'Select search language')
       // Check that search field has correct Aria label
-      cy.get('#search-field').should('have.attr', 'aria-label', 'Text input with dropdown button')
+      cy.get('#search-field').should('have.attr', 'aria-label', 'Search text field')
       // Check that search field has correct Aria label
       cy.get('#search-button').should('have.attr', 'aria-label', 'Search')
       // Check that search field has correct placeholder
-      cy.get('#search-field').should('have.attr', 'placeholder', 'Search...')
+      cy.get('#search-field').should('have.attr', 'placeholder', 'Search in this vocabulary')
       // Check that search results have correct message when no results were found
       cy.get('#search-field').type('No results')
       cy.get('#search-autocomplete-results').within(() => {
@@ -305,11 +305,11 @@ describe('Vocab search bar', () => {
       // Check that language selector has correct Aria label
       cy.get('#language-selector button').should('have.attr', 'aria-label', 'Valitse hakukieli')
       // Check that search field has correct Aria label
-      cy.get('#search-field').should('have.attr', 'aria-label', 'Tekstinsyöttö pudotusvalikolla')
+      cy.get('#search-field').should('have.attr', 'aria-label', 'Hakutekstikenttä')
       // Check that search field has correct Aria label
       cy.get('#search-button').should('have.attr', 'aria-label', 'Hae')
       // Check that search field has correct placeholder
-      cy.get('#search-field').should('have.attr', 'placeholder', 'Hae...')
+      cy.get('#search-field').should('have.attr', 'placeholder', 'Hae tästä sanastosta')
       // Check that search results have correct message when no results were found
       cy.get('#search-field').type('No results')
       cy.get('#search-autocomplete-results').within(() => {
@@ -321,11 +321,11 @@ describe('Vocab search bar', () => {
       // Check that language selector has correct Aria label
       cy.get('#language-selector button').should('have.attr', 'aria-label', 'Välj sökspråk')
       // Check that search field has correct Aria label
-      cy.get('#search-field').should('have.attr', 'aria-label', 'Textinmatning med rullgardinsmeny')
+      cy.get('#search-field').should('have.attr', 'aria-label', 'Sökfält')
       // Check that search field has correct Aria label
       cy.get('#search-button').should('have.attr', 'aria-label', 'Sök')
       // Check that search field has correct placeholder
-      cy.get('#search-field').should('have.attr', 'placeholder', 'Sök...')
+      cy.get('#search-field').should('have.attr', 'placeholder', 'Sök i denna vokabulär')
       // Check that search results have correct message when no results were found
       cy.get('#search-field').type('No results')
       cy.get('#search-autocomplete-results').within(() => {
