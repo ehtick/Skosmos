@@ -16,7 +16,7 @@ function startVocabSearchApp () {
     },
     computed: {
       searchPlaceholder () {
-        return $t('Search')
+        return $t('Search in this vocabulary')
       },
       anyLanguages () {
         return $t('Any language')
