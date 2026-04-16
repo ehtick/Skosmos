@@ -8,8 +8,8 @@ describe('Global search bar', () => {
     cy.get('#vocab-list li').should('have.length', 14)
   })
 
-  it('Dropdown menu header text is updated according to the selected vocabularies', () => {
-    cy.get('#vocab-selector .vocab-dropdown-btn').should('contain.text', '1. Valitse sanasto')
+  it('dropdown menu header text is updated according to the selected vocabularies', () => {
+    cy.get('#vocab-selector .vocab-dropdown-btn').should('contain.text', 'Valitse sanasto')
     // select "altlabel"
     cy.get('#vocab-list').contains('label', 'altlabel').find('input[type="checkbox"]').check({ force: true })
     cy.get('#vocab-selector .vocab-dropdown-btn').should('contain.text', 'altlabel')
@@ -26,13 +26,12 @@ describe('Global search bar', () => {
   it('Dropdown menu header text returns to original hint if no vocabularies are selected', () => {
     cy.get('#vocab-list li').eq(1).find('input[type="checkbox"]').check({ force: true })
     cy.get('#vocab-list li').eq(1).find('input[type="checkbox"]').uncheck({ force: true })
-    cy.get('#vocab-selector .vocab-dropdown-btn').should('contain.text', '1. Valitse sanasto')
+    cy.get('#vocab-selector .vocab-dropdown-btn').should('contain.text', 'Valitse sanasto')
   })
 
-  it('Changing the search language changes the language selector dropdown header text', () => {
-    cy.get('#global-search-toggle').click()
-    cy.get('#language-selector .dropdown-toggle').should('contain.text', '2. Valitse kieli')
-    cy.get('#language-selector .dropdown-toggle').click()
+  it('changing the search language changes the language selector dropdown header text', () => {
+
+    cy.get('#language-selector .dropdown-toggle').should('contain.text', 'Valitse kieli')
 
     cy.get('#language-list').should('be.visible')
 
@@ -47,12 +46,8 @@ describe('Global search bar', () => {
 
   it('Selecting "all languages" does not change content language', () => {
 
-    cy.get('#global-search-toggle').click()
-    cy.get('#language-selector .dropdown-toggle').should('contain.text', '2. Valitse kieli')
-    cy.get('#language-selector .dropdown-toggle').click()
-    cy.get('#language-list').should('be.visible')
-
-    cy.get('#language-list li').contains('label', 'englanti').click()
+    cy.get('#language-selector .dropdown-toggle').should('contain.text', 'Valitse kieli')
+    cy.get('#language-list li label').find('input[type="radio"][value="en"]').check({ force: true })
     cy.url().should('include', 'clang=en')
 
     cy.get('#language-selector .dropdown-toggle').click()
@@ -301,4 +296,69 @@ describe('Global search bar', () => {
         cy.get('#language-selector .dropdown-toggle').should('contain.text', 'englanti')
       });
     })
+    describe('Translations', () => {
+      it('Global search bar has correct translations', () => {
+
+        cy.visit('/en/')
+
+        cy.get('#global-search-toggle').click();
+        cy.get('#search-wrapper').should('exist');
+
+      // Check that vocabulary selector has correct place holder text
+      cy.get('#vocab-selector button').should('have.text', 'Choose vocabulary')
+      // Check that vocabulary selector has correct Aria label
+      cy.get('#vocab-selector button').should('have.attr', 'aria-label', 'Select search vocabularies')
+      // Check that search language selector has correct place holder text
+      cy.get('#language-selector button').should('have.text', 'Choose language')
+      // Check that search language selector has correct Aria label
+      cy.get('#language-selector button').should('have.attr', 'aria-label', 'Select search language')
+      // Check that search field has correct Aria label
+      cy.get('#search-field').should('have.attr', 'aria-label', 'Search')
+      // Check that search field has correct placeholder
+      cy.get('#search-field').should('have.attr', 'placeholder', 'Enter search term')
+      // Check that search field has correct aria-label
+      cy.get('#search-button').should('have.attr', 'aria-label', 'Search')
+      // Check that search language list has correctly translated text for anylang selector
+      cy.get('#language-list li').contains('label', 'Any language')
+      // Check that search results have correct message when no results were found
+      cy.get('#search-field').type('Ei tuloksia')
+      cy.get('#search-autocomplete-results').within(() => {
+        cy.get('li').eq(0).invoke('text').should('contain', 'No results')
+      })
+      // the clear search button should have an aria label
+      cy.get('#clear-button').should('have.attr', 'aria-label', 'Clear search field')
+
+
+      // go to YSO vocab front page in Finnish
+      cy.visit('/fi/')
+
+      cy.get('#global-search-toggle').click();
+      cy.get('#search-wrapper').should('exist');
+
+      // Check that vocabulary selector has correct place holder text
+      cy.get('#vocab-selector button').should('have.text', 'Valitse sanasto')
+      // Check that vocabulary selector has correct Aria label
+      cy.get('#vocab-selector button').should('have.attr', 'aria-label', 'Valitse haun kohdesanastot')
+      // Check that search language selector has correct place holder text
+      cy.get('#language-selector button').should('have.text', 'Valitse kieli')
+      // Check that search language selector has correct Aria label
+      cy.get('#language-selector button').should('have.attr', 'aria-label', 'Valitse hakukieli')
+      // Check that search field has correct Aria label
+      cy.get('#search-field').should('have.attr', 'aria-label', 'Hae')
+      // Check that search field has correct placeholder
+      cy.get('#search-field').should('have.attr', 'placeholder', 'Syötä haettava termi')
+      // Check that search field has correct aria-label
+      cy.get('#search-button').should('have.attr', 'aria-label', 'Hae')
+      // Check that search language list has correctly translated text for anylang selector
+      cy.get('#language-list li').contains('label', 'kaikilla kielillä')
+      // Check that search results have correct message when no results were found
+      cy.get('#search-field').type('Ei tuloksia')
+      cy.get('#search-autocomplete-results').within(() => {
+        cy.get('li').eq(0).invoke('text').should('contain', 'Ei tuloksia')
+      })
+      // the clear search button should have an aria label
+      cy.get('#clear-button').should('have.attr', 'aria-label', 'Tyhjennä hakukenttä')
+
+    });
+  })
 })

@@ -16,7 +16,7 @@ function startVocabSearchApp () {
     },
     computed: {
       searchPlaceholder () {
-        return $t('Search...')
+        return $t('Search')
       },
       anyLanguages () {
         return $t('Any language')
@@ -27,13 +27,13 @@ function startVocabSearchApp () {
       selectSearchLanguageAriaMessage () {
         return $t('Select search language')
       },
-      textInputWithDropdownButtonAriaMessage () {
-        return $t('Text input with dropdown button')
+      searchFieldAriaMessage () {
+        return $t('Search text field')
       },
-      searchAriaMessage () {
+      searchButtonAriaMessage () {
         return $t('Search')
       },
-      clearSearchButtonAriaMessage () {
+      clearSearchAriaMessage () {
         return $t('Clear search field')
       }
     },
@@ -283,7 +283,7 @@ function startVocabSearchApp () {
             id="search-field"
             autocomplete="off"
             data-bs-toggle=""
-            :aria-label="textInputWithDropdownButtonAriaMessage"
+            :aria-label="searchFieldAriaMessage"
             :placeholder="searchPlaceholder"
             v-click-outside="hideAutoComplete"
             v-model="searchTerm"
@@ -375,16 +375,15 @@ function startVocabSearchApp () {
             </li>
           </ul>
         </span>
-        <button
-          id="clear-button"
-          class="btn btn-danger"
-          type="clear"
-          v-if="searchTerm"
-          :aria-label="clearSearchButtonAriaMessage"
-          @click="resetSearchTermAndHideDropdown()">
+        <button id="clear-button"
+                class="btn btn-danger"
+                type="clear"
+                :aria-label="clearSearchAriaMessage"
+                v-if="searchTerm"
+                @click="resetSearchTermAndHideDropdown()">
           <i class="fa-solid fa-xmark"></i>
         </button>
-        <button id="search-button" class="btn btn-outline-secondary" :aria-label="searchAriaMessage" @click="gotoSearchPage()">
+        <button id="search-button" class="btn btn-outline-secondary" :aria-label="searchButtonAriaMessage" @click="gotoSearchPage()">
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
       </div>
