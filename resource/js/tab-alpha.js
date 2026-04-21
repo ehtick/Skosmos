@@ -73,7 +73,7 @@ function startAlphaApp () {
             this.loadConcepts(this.indexLetters[0], true)
           })
       },
-      loadConcepts (letter, first=false) {
+      loadConcepts (letter, first = false) {
         this.loadingConcepts = true
         this.currentOffset = 0
         this.selectedLetter = letter
@@ -95,9 +95,9 @@ function startAlphaApp () {
             // Add scrolling event listener back after concepts are loaded
             this.$refs.tabAlpha.$refs.list.addEventListener('scroll', this.handleScrollEvent)
             // Update aria live message after selecting a new letter (not on first load)
-           if (!first) {
-            this.ariaLiveMessage = `${this.conceptsLoadedMessage} ${this.selectedLetter}`
-           }
+            if (!first) {
+              this.ariaLiveMessage = `${this.conceptsLoadedMessage} ${this.selectedLetter}`
+            }
           })
           .catch(error => {
             if (error.name !== 'AbortError') {
