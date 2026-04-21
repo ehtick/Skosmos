@@ -822,38 +822,42 @@ header .container-fluid .row {
   white-space: nowrap;
 }
 
-#sidebar .pagination {
+#sidebar .letters {
   background-color: var(--sidebar-tab-active-bg);
   padding: 1rem;
-  margin: 0;
+  display: flex;
   flex-wrap: wrap;
 }
 
-#sidebar .page-item, #sidebar .page-link {
+#sidebar .form-check, #sidebar .form-check-label {
   background-color: var(--sidebar-tab-active-bg);
   color: var(--sidebar-tab-active-text);
-  font-weight: normal;
-  border: none;
-  border-radius: 0;
   margin: 0;
-  transition: none;
   width: 35px;
+  cursor: pointer;
 }
 
-#sidebar .page-link {
+#sidebar .form-check {
+  padding: 0;
+}
+
+#sidebar .form-check-label {
   display: flex;
-  align-content: center;
-  text-align: center;
+  justify-content: center;
+  padding: 0.375rem 0.75rem;
 }
 
-/* what to do with these? */
-#sidebar .page-link:hover, #sidebar .page-link:active, #sidebar .page-link:focus {
-  background-color: var(--sidebar-tab-active-bg);
-  color: var(--sidebar-tab-active-text);
-  box-shadow: none;
+#sidebar .form-check-label.selected, #sidebar .form-check-label:hover, #sidebar .form-check-label:active {
+  text-decoration: underline;
 }
 
-#sidebar .page-item:last-child .page-link {
+.form-check-input:focus + .form-check-label {
+  text-decoration: underline;
+  outline: 2px dotted white;
+  outline-offset: -2px;
+}
+
+#sidebar .form-check-label.wide {
   width: 50px;
 }
 
