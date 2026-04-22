@@ -257,10 +257,11 @@ function startAlphaApp () {
               :id="'alpha-' + letter" 
               :value="letter"
               @change="loadConcepts($event, letter)"
+              @keydown.enter="loadConcepts($event, letter)"
             >
             <label class="form-check-label"
               :for="'alpha-' + letter"
-              :class="{ 'selected': selectedLetter === letter, 'wide': selectedLetter.includes('-') }"
+              :class="{ 'selected': selectedLetter === letter, 'wide': letter.includes('-') }"
             >
               {{ letter }}
             </label>

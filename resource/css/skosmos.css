@@ -852,7 +852,6 @@ header .container-fluid .row {
 }
 
 .form-check-input:focus + .form-check-label {
-  text-decoration: underline;
   outline: 2px dotted white;
   outline-offset: -2px;
 }
