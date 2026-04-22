@@ -1,20 +1,27 @@
+/* global $t, onTranslationReady */
+
 // Register event listener for clicking on sidebar collapse button that toggles visibility of sidebar
-const sidebarCollapseBtn = document.getElementById('sidebar-collapse-btn')
 
-if (sidebarCollapseBtn) {
-  sidebarCollapseBtn.addEventListener('click', () => {
-    // Toggle sidebar visibility
-    const sidebar = document.getElementById('sidebar-col')
-    sidebar.classList.toggle('d-none')
+function initializeSidebarCollapse () {
+  const sidebarCollapseBtn = document.getElementById('sidebar-collapse-btn')
 
-    // Toggle fontawesome icon
-    const i = document.querySelector('#sidebar-collapse-btn i')
-    i.classList.toggle('fa-chevron-right')
-    i.classList.toggle('fa-chevron-down')
+  if (sidebarCollapseBtn) {
+    sidebarCollapseBtn.addEventListener('click', () => {
+      // Toggle sidebar visibility
+      const sidebar = document.getElementById('sidebar-col')
+      sidebar.classList.toggle('d-none')
 
-    // Toggle button text
-    sidebarCollapseBtn.getElementsByTagName('span')[0].textContent = sidebar.classList.contains('d-none') ? 'Browse concepts' : 'Hide concepts'
+      // Toggle fontawesome icon
+      const i = document.querySelector('#sidebar-collapse-btn i')
+      i.classList.toggle('fa-chevron-right')
+      i.classList.toggle('fa-chevron-down')
 
-    sidebarCollapseBtn.setAttribute('aria-expanded', sidebarCollapseBtn.getAttribute('aria-expanded') === 'true' ? 'false' : 'true')
-  })
+      // Toggle button text
+      sidebarCollapseBtn.getElementsByTagName('span')[0].textContent = sidebar.classList.contains('d-none') ? $t('Browse concepts') : $t('Hide concepts')
+
+      sidebarCollapseBtn.setAttribute('aria-expanded', sidebarCollapseBtn.getAttribute('aria-expanded') === 'true' ? 'false' : 'true')
+    })
+  }
 }
+
+onTranslationReady(initializeSidebarCollapse)
