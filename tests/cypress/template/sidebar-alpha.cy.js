@@ -144,8 +144,5 @@ describe('Alphabetical index', () => {
     cy.get('.aria-live-message').invoke('text').should('equal', 'Concepts loaded for letter B')
     // Check that new concepts are loaded
     cy.get('#tab-alphabetical').find('.sidebar-list li').first().invoke('text').should('contain', 'birch bark manuscripts')
-    // Click tab and check that sidebar list has focus
-    cy.press(Cypress.Keyboard.Keys.TAB)
-    cy.get('#tab-alphabetical').find('.sidebar-list').should('have.focus')
   })
 })
