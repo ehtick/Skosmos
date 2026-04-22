@@ -46,6 +46,20 @@ function startVocabSearchApp () {
       this.renderedResultsList = []
       this.uriPrefixes = {}
       this.showNotation = window.SKOSMOS.showNotation
+
+      this.langMenuKeydownHandler = (e) => {
+        // Bypass Bootstrap event listener on window level
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+          if (e.target.closest('#language-selector') && e.target.className === "dropdown-item" ) {
+            e.stopImmediatePropagation()
+            this.onLangMenuKeydown(e)
+          }
+        }
+      }
+      window.addEventListener('keydown', this.langMenuKeydownHandler, true)
+    },
+    beforeUnmount () {
+      window.removeEventListener('keydown', this.langMenuKeydownHandler, true)
     },
     methods: {
       autoComplete () {
@@ -251,7 +265,6 @@ function startVocabSearchApp () {
       },
       onLangMenuKeydown(event) {
         const items = this.$refs.langMenu.querySelectorAll('[role="menuitemradio"]')
-        console.log("onLangMenuKeydown")
         switch (event.key) {
           case 'ArrowDown': {
             event.preventDefault()
@@ -267,6 +280,9 @@ function startVocabSearchApp () {
           }
           case 'ArrowUp': {
             event.preventDefault()
+            if (this.focusedLangIndex === 0) {
+              this.closeLangMenu()
+            }
             this.focusedLangIndex =
               (this.focusedLangIndex - 1 + items.length) % items.length
             items[this.focusedLangIndex].focus()
@@ -275,9 +291,7 @@ function startVocabSearchApp () {
           case 'Enter':
           case ' ': {
             event.preventDefault()
-            this.selectLanguage(
-              Object.keys(this.languageStrings)[this.focusedLangIndex]
-            )
+            this.selectLanguage(Object.keys(this.languageStrings)[this.focusedLangIndex])
             break
           }
           case 'Escape': {
@@ -302,16 +316,17 @@ function startVocabSearchApp () {
       },
 
       closeLangMenu() {
-        this.showLangMenu = false
-        this.focusedLangIndex = -1
+        const btn = this.$refs.langButton
+        const dropdown = bootstrap.Dropdown.getOrCreateInstance(btn)
+        dropdown.hide()
 
+        this.focusedLangIndex = -1
         this.$nextTick(() => {
           this.$refs.langButton.focus()
         })
       },
 
       selectLanguage(key) {
-        console.log("Vaihdettu kieli " + key)
         //TODO: päivitä kieliparametri sivulle
         this.changeLang(key)
         this.closeLangMenu()
@@ -325,9 +340,9 @@ function startVocabSearchApp () {
             ref="langButton"
             class="btn btn-outline-secondary dropdown-toggle"
             data-bs-toggle="dropdown"
+            @keydown="onLangMenuKeydown"
             aria-haspopup="true"
             :aria-label="selectSearchLanguageAriaMessage">
-
             <template v-if="languageStrings">{{ languageStrings[selectedLanguage] }}</template>
             <i class="chevron fa-solid fa-chevron-down"></i>
           </button>
@@ -336,8 +351,7 @@ function startVocabSearchApp () {
             ref="langMenu"
             class="dropdown-menu"
             role="menu"
-            :class="{ show: showLangMenu }"
-            @keydown="onLangMenuKeydown">
+            :class="{ show: showLangMenu }">
             <li
               v-for="(value, key, index) in languageStrings"
               :key="key"
