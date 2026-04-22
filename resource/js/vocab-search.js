@@ -10,7 +10,6 @@ function startVocabSearchApp () {
         renderedResultsList: [],
         languageStrings: null,
         uriPrefixes: {},
-        showLangMenu: false,
         showAutoCompleteDropdown: false,
         focusedLangIndex: -1,
         showNotation: null
@@ -49,7 +48,7 @@ function startVocabSearchApp () {
 
       this.langMenuKeydownHandler = (e) => {
         // Bypass Bootstrap event listener on window level
-        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
           if (e.target.closest('#language-selector') && e.target.className === "dropdown-item" ) {
             e.stopImmediatePropagation()
             this.onLangMenuKeydown(e)
@@ -291,7 +290,11 @@ function startVocabSearchApp () {
           case 'Enter':
           case ' ': {
             event.preventDefault()
-            this.selectLanguage(Object.keys(this.languageStrings)[this.focusedLangIndex])
+            if (event.target.classList.contains("dropdown-toggle")) {
+              this.openLangMenu()
+            } else {
+              this.changeContentLangAndReload(Object.keys(this.languageStrings)[this.focusedLangIndex])
+            }
             break
           }
           case 'Escape': {
@@ -301,7 +304,9 @@ function startVocabSearchApp () {
         }
       },
       openLangMenu() {
-        this.showLangMenu = true
+        const btn = this.$refs.langButton
+        const dropdown = bootstrap.Dropdown.getOrCreateInstance(btn)
+        dropdown.show()
 
         this.$nextTick(() => {
           const items = this.$refs.langMenu.querySelectorAll('[role="menuitemradio"]')
@@ -324,12 +329,6 @@ function startVocabSearchApp () {
         this.$nextTick(() => {
           this.$refs.langButton.focus()
         })
-      },
-
-      selectLanguage(key) {
-        //TODO: päivitä kieliparametri sivulle
-        this.changeLang(key)
-        this.closeLangMenu()
       }
     },
     template: `
@@ -350,15 +349,14 @@ function startVocabSearchApp () {
           <ul
             ref="langMenu"
             class="dropdown-menu"
-            role="menu"
-            :class="{ show: showLangMenu }">
+            role="menu">
             <li
               v-for="(value, key, index) in languageStrings"
               :key="key"
               role="menuitemradio"
               :aria-checked="selectedLanguage === key"
               :tabindex="focusedLangIndex === index ? 0 : -1"
-              @click="selectLanguage(key)"
+              @click="changeContentLangAndReload(key)"
               @focus="focusedLangIndex = index"
               class="dropdown-item">
               {{ value }}
