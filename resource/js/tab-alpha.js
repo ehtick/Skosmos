@@ -28,7 +28,7 @@ function startAlphaApp () {
         return $t('Choose alphabetical listing letter')
       },
       conceptsLoadedMessage () {
-        return $t('Concepts loaded for letter')
+        return $t('Concepts loaded for letter %letter%').replace('%letter%', this.selectedLetter)
       }
     },
     provide () {
@@ -96,7 +96,7 @@ function startAlphaApp () {
             this.$refs.tabAlpha.$refs.list.addEventListener('scroll', this.handleScrollEvent)
             // Update aria live message after selecting a new letter (not on first load)
             if (!first) {
-              this.ariaLiveMessage = `${this.conceptsLoadedMessage} ${this.selectedLetter}`
+              this.ariaLiveMessage = this.conceptsLoadedMessage
             }
           })
           .catch(error => {
