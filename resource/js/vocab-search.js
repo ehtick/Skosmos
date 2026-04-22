@@ -274,7 +274,6 @@ function startVocabSearchApp () {
               this.focusedLangIndex = (this.focusedLangIndex + 1) % items.length
               items[this.focusedLangIndex].focus()
             }
-            console.log(this.focusedLangIndex)
             break
           }
           case 'ArrowUp': {
