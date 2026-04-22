@@ -82,6 +82,11 @@ const updateSKOSMOS = (conceptHTML) => {
   }
 }
 
+const moveFocus = () => {
+  // Move focus to prefLabel after page has been loaded
+  document.getElementById('concept-preflabel').focus()
+}
+
 /* eslint-disable no-unused-vars */
 const partialPageLoad = (event, pageUri) => {
   event.preventDefault()
@@ -110,6 +115,7 @@ const partialPageLoad = (event, pageUri) => {
       updateTitle(conceptHTML)
       updateJsonLD(conceptHTML)
       updateSKOSMOS(conceptHTML)
+      moveFocus()
 
       // custom event to signal that a new concept page was loaded
       const event = new Event('loadConceptPage')
