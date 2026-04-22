@@ -1,4 +1,4 @@
-/* global Vue, $t, onTranslationReady */
+/* global Vue, bootstrap, $t, onTranslationReady */
 
 function startVocabSearchApp () {
   const vocabSearch = Vue.createApp({
@@ -49,7 +49,7 @@ function startVocabSearchApp () {
       this.langMenuKeydownHandler = (e) => {
         // Bypass Bootstrap event listener on window level
         if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
-          if (e.target.closest('#language-selector') && e.target.className === "dropdown-item" ) {
+          if (e.target.closest('#language-selector') && e.target.className === 'dropdown-item') {
             e.stopImmediatePropagation()
             this.onLangMenuKeydown(e)
           }
@@ -262,7 +262,7 @@ function startVocabSearchApp () {
         this.showAutoCompleteDropdown = true
         this.$forceUpdate()
       },
-      onLangMenuKeydown(event) {
+      onLangMenuKeydown (event) {
         const items = this.$refs.langMenu.querySelectorAll('[role="menuitemradio"]')
         switch (event.key) {
           case 'ArrowDown': {
@@ -289,7 +289,7 @@ function startVocabSearchApp () {
           case 'Enter':
           case ' ': {
             event.preventDefault()
-            if (event.target.classList.contains("dropdown-toggle")) {
+            if (event.target.classList.contains('dropdown-toggle')) {
               this.openLangMenu()
             } else {
               this.changeContentLangAndReload(Object.keys(this.languageStrings)[this.focusedLangIndex])
@@ -302,7 +302,7 @@ function startVocabSearchApp () {
           }
         }
       },
-      openLangMenu() {
+      openLangMenu () {
         const btn = this.$refs.langButton
         const dropdown = bootstrap.Dropdown.getOrCreateInstance(btn)
         dropdown.show()
@@ -319,7 +319,7 @@ function startVocabSearchApp () {
         })
       },
 
-      closeLangMenu() {
+      closeLangMenu () {
         const btn = this.$refs.langButton
         const dropdown = bootstrap.Dropdown.getOrCreateInstance(btn)
         dropdown.hide()
