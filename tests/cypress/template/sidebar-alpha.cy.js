@@ -119,13 +119,33 @@ describe('Alphabetical index', () => {
     // check that the second mapping property has the right number of entries
     cy.get('.prop-mapping').eq(0).find('.prop-mapping-label').should('have.length', 3)
   })
-  // Check the correctness of Aria-labels (Sami language will be implemented later)"
   it('Aria tags are correct for each language', () => {
+    // Check the correctness of Aria-labels (Sami language will be implemented later)
     cy.visit('/yso/en/')
+    cy.get('#tab-alphabetical .letters legend').invoke('text').should('contain', 'Choose alphabetical listing letter')
     cy.get('#tab-alphabetical .list-group-item > a').should('have.attr', 'aria-label', 'Go to the concept page')
     cy.visit('/yso/sv/')
+    cy.get('#tab-alphabetical .letters legend').invoke('text').should('contain', 'Välj en bokstav för alfabetisk lista')
     cy.get('#tab-alphabetical .list-group-item > a').should('have.attr', 'aria-label', 'Gå till begreppssidan')
     cy.visit('/yso/fi/')
+    cy.get('#tab-alphabetical .letters legend').invoke('text').should('contain', 'Valitse aakkosellisen listan kirjain')
     cy.get('#tab-alphabetical .list-group-item > a').should('have.attr', 'aria-label', 'Mene käsitesivulle')
+  })
+  it('Keyboard navigation', () => {
+    cy.visit('/yso/en/')
+    // Check that aria live message is initially empty
+    cy.get('.aria-live-message').invoke('text').should('equal', '')
+    // Check that concepts have been loaded
+    cy.get('#tab-alphabetical').find('.sidebar-list li').first().invoke('text').should('contain', 'abstract objects')
+    // Focus on first letter and press right arrow key
+    cy.get('.letters input').first().focus()
+    cy.press(Cypress.Keyboard.Keys.RIGHT)
+    // Check that aria live message is updated
+    cy.get('.aria-live-message').invoke('text').should('equal', 'Concepts loaded for letter B')
+    // Check that new concepts are loaded
+    cy.get('#tab-alphabetical').find('.sidebar-list li').first().invoke('text').should('contain', 'birch bark manuscripts')
+    // Click tab and check that sidebar list has focus
+    cy.press(Cypress.Keyboard.Keys.TAB)
+    cy.get('#tab-alphabetical').find('.sidebar-list').should('have.focus')
   })
 })

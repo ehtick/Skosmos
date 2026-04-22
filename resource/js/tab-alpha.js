@@ -245,7 +245,7 @@ function startAlphaApp () {
     template: `
       <template v-if="!loadingLetters">
         <fieldset class="letters" ref="letters">
-          <div class="visually-hidden" aria-live="polite">
+          <div class="visually-hidden aria-live-message" aria-live="polite">
             {{ ariaLiveMessage }}
           </div>
           <legend class="visually-hidden">
