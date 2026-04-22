@@ -10,7 +10,9 @@ function startVocabSearchApp () {
         renderedResultsList: [],
         languageStrings: null,
         uriPrefixes: {},
-        showDropdown: false,
+        showLangMenu: false,
+        showAutoCompleteDropdown: false,
+        focusedLangIndex: -1,
         showNotation: null
       }
     },
@@ -201,7 +203,7 @@ function startVocabSearchApp () {
         this.showAutoComplete()
       },
       hideAutoComplete () {
-        this.showDropdown = false
+        this.showAutoCompleteDropdown = false
         this.$forceUpdate()
       },
       gotoSearchPage () {
@@ -244,37 +246,111 @@ function startVocabSearchApp () {
       * Show the existing autocomplete list if it was hidden by onClickOutside()
       */
       showAutoComplete () {
-        this.showDropdown = true
+        this.showAutoCompleteDropdown = true
         this.$forceUpdate()
+      },
+      onLangMenuKeydown(event) {
+        const items = this.$refs.langMenu.querySelectorAll('[role="menuitemradio"]')
+        console.log("onLangMenuKeydown")
+        switch (event.key) {
+          case 'ArrowDown': {
+            event.preventDefault()
+            if (this.focusedLangIndex === items.length) {
+              this.focusedLangIndex = 0
+              items[this.focusedLangIndex].focus()
+            } else {
+              this.focusedLangIndex = (this.focusedLangIndex + 1) % items.length
+              items[this.focusedLangIndex].focus()
+            }
+            console.log(this.focusedLangIndex)
+            break
+          }
+          case 'ArrowUp': {
+            event.preventDefault()
+            this.focusedLangIndex =
+              (this.focusedLangIndex - 1 + items.length) % items.length
+            items[this.focusedLangIndex].focus()
+            break
+          }
+          case 'Enter':
+          case ' ': {
+            event.preventDefault()
+            this.selectLanguage(
+              Object.keys(this.languageStrings)[this.focusedLangIndex]
+            )
+            break
+          }
+          case 'Escape': {
+            this.closeLangMenu()
+            break
+          }
+        }
+      },
+      openLangMenu() {
+        this.showLangMenu = true
+
+        this.$nextTick(() => {
+          const items = this.$refs.langMenu.querySelectorAll('[role="menuitemradio"]')
+
+          this.focusedLangIndex = Math.max(
+            0,
+            Object.keys(this.languageStrings).indexOf(this.selectedLanguage)
+          )
+
+          items[this.focusedLangIndex]?.focus()
+        })
+      },
+
+      closeLangMenu() {
+        this.showLangMenu = false
+        this.focusedLangIndex = -1
+
+        this.$nextTick(() => {
+          this.$refs.langButton.focus()
+        })
+      },
+
+      selectLanguage(key) {
+        console.log("Vaihdettu kieli " + key)
+        //TODO: päivitä kieliparametri sivulle
+        this.changeLang(key)
+        this.closeLangMenu()
       }
     },
     template: `
       <div class="input-group ps-xl-2 flex-nowrap" id="search-wrapper">
 
       <div class="dropdown" id="language-selector">
-        <button class="btn btn-outline-secondary dropdown-toggle"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-          :aria-label="selectSearchLanguageAriaMessage"
-          v-if="languageStrings">
-          {{ languageStrings[selectedLanguage] }}
-          <i class="fa-solid fa-chevron-down"></i>
-        </button>
-        <ul class="dropdown-menu" id="language-list" role="menu">
-          <li v-for="(value, key) in languageStrings" :key="key" role="none">
-            <a
-              class="dropdown-item"
-              :value="key"
-              @click="changeContentLangAndReload(key)"
-              @keydown.enter="changeContentLangAndReload(key)"
-              role="menuitem"
-              tabindex=0 >
+          <button
+            ref="langButton"
+            class="btn btn-outline-secondary dropdown-toggle"
+            data-bs-toggle="dropdown"
+            aria-haspopup="true"
+            :aria-label="selectSearchLanguageAriaMessage">
+
+            <template v-if="languageStrings">{{ languageStrings[selectedLanguage] }}</template>
+            <i class="chevron fa-solid fa-chevron-down"></i>
+          </button>
+
+          <ul
+            ref="langMenu"
+            class="dropdown-menu"
+            role="menu"
+            :class="{ show: showLangMenu }"
+            @keydown="onLangMenuKeydown">
+            <li
+              v-for="(value, key, index) in languageStrings"
+              :key="key"
+              role="menuitemradio"
+              :aria-checked="selectedLanguage === key"
+              :tabindex="focusedLangIndex === index ? 0 : -1"
+              @click="selectLanguage(key)"
+              @focus="focusedLangIndex = index"
+              class="dropdown-item">
               {{ value }}
-            </a>
-          </li>
-        </ul>
-      </div>
+            </li>
+          </ul>
+        </div>
 
         <span id="headerbar-search" class="dropdown">
           <input type="search"
@@ -292,7 +368,7 @@ function startVocabSearchApp () {
             @click="showAutoComplete()">
           <ul id="search-autocomplete-results"
               class="dropdown-menu w-100"
-              :class="{ 'show': showDropdown }"
+              :class="{ 'show': showAutoCompleteDropdown }"
               aria-labelledby="search-field">
             <li class="autocomplete-result container" v-for="result in renderedResultsList"
               :key="result.prefLabel" >
