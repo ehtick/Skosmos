@@ -122,10 +122,10 @@ describe('Alphabetical index', () => {
   // Check the correctness of Aria-labels (Sami language will be implemented later)"
   it('Aria tags are correct for each language', () => {
     cy.visit('/yso/en/')
-    cy.get('#tab-alphabetical .list-group-item > a').should('have.attr', 'aria-label', 'Go to the concept page')
+    cy.get('#tab-alphabetical .list-group-item > a span').invoke('text').should('contain', 'Go to the concept page')
     cy.visit('/yso/sv/')
-    cy.get('#tab-alphabetical .list-group-item > a').should('have.attr', 'aria-label', 'Gå till begreppssidan')
+    cy.get('#tab-alphabetical .list-group-item > a span').invoke('text').should('contain', 'Gå till begreppssidan')
     cy.visit('/yso/fi/')
-    cy.get('#tab-alphabetical .list-group-item > a').should('have.attr', 'aria-label', 'Mene käsitesivulle')
+    cy.get('#tab-alphabetical .list-group-item > a span').invoke('text').should('contain', 'Mene käsitesivulle')
   })
 })

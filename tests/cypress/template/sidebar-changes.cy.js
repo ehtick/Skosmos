@@ -93,21 +93,21 @@ describe('New and removed view', () => {
     // Click on changes tab
     cy.get('#changes').click()
     // Check that concepts have correct Aria labels
-    cy.get('#tab-changes').find('.sidebar-list li a').eq(0).should('have.attr', 'aria-label', 'Go to the concept page')
+    cy.get('#tab-changes').find('.sidebar-list li a span').eq(0).invoke('text').should('contain', 'Go to the concept page')
 
     // go to YSO vocab front page in Finnish
     cy.visit('/yso/fi/')
     // Click on changes tab
     cy.get('#changes').click()
     // Check that concepts have correct Aria labels
-    cy.get('#tab-changes').find('.sidebar-list li a').eq(0).should('have.attr', 'aria-label', 'Mene käsitesivulle')
+    cy.get('#tab-changes').find('.sidebar-list li a span').eq(0).invoke('text').should('contain', 'Mene käsitesivulle')
 
     // go to YSO vocab front page in Swedish
     cy.visit('/yso/sv/')
     // Click on changes tab
     cy.get('#changes').click()
     // Check that concepts have correct Aria labels
-    cy.get('#tab-changes').find('.sidebar-list li a').eq(0).should('have.attr', 'aria-label', 'Gå till begreppssidan')
+    cy.get('#tab-changes').find('.sidebar-list li a span').eq(0).invoke('text').should('contain', 'Gå till begreppssidan')
 
   })  
 })
