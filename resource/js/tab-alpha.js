@@ -13,7 +13,8 @@ function startAlphaApp () {
         loadingConcepts: false,
         loadingMoreConcepts: false,
         currentOffset: 0,
-        listStyle: {}
+        listStyle: {},
+        ariaLiveMessage: ''
       }
     },
     computed: {
@@ -22,6 +23,12 @@ function startAlphaApp () {
       },
       toConceptPageAriaMessage () {
         return $t('Go to the concept page')
+      },
+      chooseLetterMessage () {
+        return $t('Choose alphabetical listing letter')
+      },
+      conceptsLoadedMessage () {
+        return $t('Concepts loaded for letter %letter%').replace('%letter%', this.selectedLetter)
       }
     },
     provide () {
@@ -63,12 +70,13 @@ function startAlphaApp () {
             this.indexLetters = data.indexLetters
             this.selectedLetter = this.indexLetters[0]
             this.loadingLetters = false
-            this.loadConcepts(this.indexLetters[0])
+            this.loadConcepts(this.indexLetters[0], true)
           })
       },
-      loadConcepts (letter) {
+      loadConcepts (letter, first = false) {
         this.loadingConcepts = true
         this.currentOffset = 0
+        this.selectedLetter = letter
         // Remove scrolling event listener while concepts are loaded
         this.$refs.tabAlpha.$refs.list.removeEventListener('scroll', this.handleScrollEvent)
         const params = new URLSearchParams({
@@ -82,11 +90,14 @@ function startAlphaApp () {
           })
           .then(data => {
             this.indexConcepts = data.indexConcepts
-            this.selectedLetter = letter
             this.currentOffset = 250
             this.loadingConcepts = false
             // Add scrolling event listener back after concepts are loaded
             this.$refs.tabAlpha.$refs.list.addEventListener('scroll', this.handleScrollEvent)
+            // Update aria live message after selecting a new letter (not on first load)
+            if (!first) {
+              this.ariaLiveMessage = this.conceptsLoadedMessage
+            }
           })
           .catch(error => {
             if (error.name !== 'AbortError') {
@@ -130,10 +141,10 @@ function startAlphaApp () {
         }
       },
       setListStyle () {
-        const pagination = this.$refs.tabAlpha.$refs.pagination
+        const letters = this.$refs.tabAlpha.$refs.letters
         const sidebarTabs = document.getElementById('sidebar-tabs')
 
-        const height = pagination ? pagination.clientHeight + sidebarTabs.clientHeight : sidebarTabs.clientHeight
+        const height = letters ? letters.clientHeight + sidebarTabs.clientHeight : sidebarTabs.clientHeight
         const width = sidebarTabs.getBoundingClientRect().width
 
         this.listStyle = {
@@ -148,12 +159,15 @@ function startAlphaApp () {
           :index-letters="indexLetters"
           :index-concepts="indexConcepts"
           :selected-concept="selectedConcept"
+          :selected-letter="selectedLetter"
           :loading-letters="loadingLetters"
           :loading-concepts="loadingConcepts"
           :loading-more-concepts="loadingMoreConcepts"
           :loading-message="loadingMessage"
           :list-style="listStyle"
           :to-concept-page-aria-message="toConceptPageAriaMessage"
+          :choose-letter-message="chooseLetterMessage"
+          :aria-live-message="ariaLiveMessage"
           @load-concepts="loadConcepts($event)"
           @select-concept="selectedConcept = $event"
           ref="tabAlpha"
@@ -202,7 +216,20 @@ function startAlphaApp () {
   })
 
   tabAlphaApp.component('tab-alpha', {
-    props: ['indexLetters', 'indexConcepts', 'selectedConcept', 'loadingLetters', 'loadingConcepts', 'loadingMoreConcepts', 'loadingMessage', 'listStyle', 'toConceptPageAriaMessage'],
+    props: [
+      'indexLetters',
+      'indexConcepts',
+      'selectedConcept',
+      'selectedLetter',
+      'loadingLetters',
+      'loadingConcepts',
+      'loadingMoreConcepts',
+      'loadingMessage',
+      'listStyle',
+      'toConceptPageAriaMessage',
+      'chooseLetterMessage',
+      'ariaLiveMessage'
+    ],
     emits: ['loadConcepts', 'selectConcept'],
     inject: ['partialPageLoad', 'getConceptURL', 'showNotation'],
     methods: {
@@ -217,11 +244,29 @@ function startAlphaApp () {
     },
     template: `
       <template v-if="!loadingLetters">
-        <ul class="pagination" v-if="indexLetters.length !== 0" ref="pagination">
-          <li v-for="letter in indexLetters" class="page-item">
-            <a class="page-link" href="#" @click="loadConcepts($event, letter)">{{ letter }}</a>
-          </li>
-        </ul>
+        <fieldset class="letters" ref="letters">
+          <div class="visually-hidden aria-live-message" aria-live="polite">
+            {{ ariaLiveMessage }}
+          </div>
+          <legend class="visually-hidden">
+            {{ chooseLetterMessage }}>
+          </legend>
+          <div class="form-check" v-for="letter in indexLetters">
+            <input class="form-check-input visually-hidden" type="radio" name="letters"
+              :checked="selectedLetter === letter"
+              :id="'alpha-' + letter" 
+              :value="letter"
+              @change="loadConcepts($event, letter)"
+              @keydown.enter="loadConcepts($event, letter)"
+            >
+            <label class="form-check-label"
+              :for="'alpha-' + letter"
+              :class="{ 'selected': selectedLetter === letter, 'wide': letter.includes('-') }"
+            >
+              {{ letter }}
+            </label>
+          </div>
+        </fieldset>
       </template>
       
       <div class="sidebar-list" :style="listStyle" ref="list">

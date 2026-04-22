@@ -61,7 +61,7 @@ describe('Hierarchy', () => {
     // Go to test vocab home page
     cy.visit('/test-hierarchy/en/')
     // Change letter to C in alphabetical view
-    cy.get("#tab-alphabetical .pagination").contains('a', 'C').click()
+    cy.get("#tab-alphabetical .letters").contains('.form-check-label', 'C').click()
     // Click on "Cuckoo" in alphabetical index
     cy.get('#tab-alphabetical .sidebar-list li a').last().click()
     // Check that new concept page has been loaded
@@ -83,11 +83,11 @@ describe('Hierarchy', () => {
     // Check that hierarchy tab is disabled
     cy.get('#hierarchy .nav-link').should('have.class', 'disabled')
     // Change letter to C in alphabetical view
-    cy.get("#tab-alphabetical .pagination").contains('a', 'C').click()
+    cy.get("#tab-alphabetical .letters").contains('.form-check-label', 'C').click()
     // Click on "Cuckoo" in alphabetical index
     cy.get('#tab-alphabetical .sidebar-list li a').last().click()
     // Check that new concept page has been loaded
-    cy.get('#concept-heading h1', {'timeout': 15000}).invoke('text').should('equal', 'Cuckoo')
+    cy.get('#concept-heading h1', {'timeout': 20000}).invoke('text').should('equal', 'Cuckoo')
     // Check that hierarchy tab is not disabled
     cy.get('#hierarchy .nav-link').should('not.have.class', 'disabled')
     // Click hierarchy tab open

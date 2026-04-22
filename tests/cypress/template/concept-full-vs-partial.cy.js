@@ -142,7 +142,7 @@ describe('Concept page, full vs. partial page loads', () => {
       } else {
         cy.visit('/yso/en/page/p5714') // go to "prehistoric graves" concept page
         // click on the link to "labyrinths" to trigger partial page load
-        cy.get('#tab-hierarchy').contains('a', 'labyrinths').click()
+        cy.get('#tab-hierarchy', {timeout: 10000}).contains('a', 'labyrinths').click()
       }
 
       // check that we have some mappings

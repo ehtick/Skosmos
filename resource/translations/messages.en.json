@@ -180,6 +180,8 @@
     "Value is required and can not be empty": "Value is required and can not be empty",
     "Send feedback": "Send feedback",
     "Warning!": "Warning!",
+    "Choose alphabetical listing letter": "Choose alphabetical listing letter",
     "Browse concepts": "Browse concepts",
-    "Hide concepts": "Hide concepts"
+    "Hide concepts": "Hide concepts",
+    "Concepts loaded for letter %letter%": "Concepts loaded for letter %letter%"
 }
