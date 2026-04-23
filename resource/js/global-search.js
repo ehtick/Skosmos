@@ -40,7 +40,7 @@ function startGlobalSearchApp () {
         return $t('Select search language')
       },
       searchFieldAriaMessage () {
-        return $t('Search')
+        return $t('Enter search term')
       },
       searchButtonAriaMessage () {
         return $t('Search')

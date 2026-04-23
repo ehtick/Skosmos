@@ -28,7 +28,7 @@ function startVocabSearchApp () {
         return $t('Select search language')
       },
       searchFieldAriaMessage () {
-        return $t('Search text field')
+        return $t('Search in this vocabulary')
       },
       searchButtonAriaMessage () {
         return $t('Search')

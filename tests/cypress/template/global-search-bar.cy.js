@@ -320,7 +320,7 @@ describe('Global search bar', () => {
       // Check that search language selector has correct Aria label
       cy.get('#language-selector button').should('have.attr', 'aria-label', 'Select search language')
       // Check that search field has correct Aria label
-      cy.get('#search-field').should('have.attr', 'aria-label', 'Search')
+      cy.get('#search-field').should('have.attr', 'aria-label', 'Enter search term')
       // Check that search field has correct placeholder
       cy.get('#search-field').should('have.attr', 'placeholder', 'Enter search term')
       // Check that search field has correct aria-label
@@ -351,7 +351,7 @@ describe('Global search bar', () => {
       // Check that search language selector has correct Aria label
       cy.get('#language-selector button').should('have.attr', 'aria-label', 'Valitse hakukieli')
       // Check that search field has correct Aria label
-      cy.get('#search-field').should('have.attr', 'aria-label', 'Hae')
+      cy.get('#search-field').should('have.attr', 'aria-label', 'Syötä haettava termi')
       // Check that search field has correct placeholder
       cy.get('#search-field').should('have.attr', 'placeholder', 'Syötä haettava termi')
       // Check that search field has correct aria-label
