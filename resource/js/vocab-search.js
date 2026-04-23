@@ -347,6 +347,7 @@ function startVocabSearchApp () {
 
           <ul
             ref="langMenu"
+            id="language-list"
             class="dropdown-menu"
             role="menu">
             <li
