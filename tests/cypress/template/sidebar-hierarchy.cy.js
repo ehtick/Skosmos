@@ -172,14 +172,14 @@ describe('Hierarchy', () => {
     cy.visit('/test-hierarchy/fi/')
     cy.get('#hierarchy').should('not.have.class', 'disabled').click()
     cy.get('#hierarchy-list').find('ul.list-group button').should('have.attr', 'aria-label', 'Avaa');
-    cy.get('.concept-label a').first().should('have.attr', 'aria-label', 'Mene käsitesivulle')
+    cy.get('.concept-label a span').eq(0).invoke('text').should('contain', 'Mene käsitesivulle')
     cy.visit('/test-hierarchy/en/')
     cy.get('#hierarchy').should('not.have.class', 'disabled').click()
     cy.get('#hierarchy-list').find('ul.list-group button').should('have.attr', 'aria-label', 'Open');
-    cy.get('.concept-label a').first().should('have.attr', 'aria-label', 'Go to the concept page')
+    cy.get('.concept-label a span').eq(0).invoke('text').should('contain', 'Go to the concept page')
     cy.visit('/test-hierarchy/sv/')
     cy.get('#hierarchy').should('not.have.class', 'disabled').click()
     cy.get('#hierarchy-list').find('ul.list-group button').should('have.attr', 'aria-label', 'Öppna');
-    cy.get('.concept-label a').first().should('have.attr', 'aria-label', 'Gå till begreppssidan')
+    cy.get('.concept-label a span').eq(0).invoke('text').should('contain', 'Gå till begreppssidan')
   })
 })

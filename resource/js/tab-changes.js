@@ -217,26 +217,26 @@ function startChangesApp () {
                   <a :class="{ 'selected': selectedConcept === concept.uri }"
                     :href="getConceptURL(concept.uri)"
                     @click="loadConcept($event, concept.uri)"
-                    :aria-label="toConceptPageAriaMessage"
                   >
                     <s>{{ concept.prefLabel }}</s>
+                    <span class="visually-hidden">{{ toConceptPageAriaMessage }}</span>
                   </a>
                   <i class="fa-solid fa-arrow-right"></i>
                   <a :class="{ 'selected': selectedConcept === concept.replacedBy }"
                     :href="getConceptURL(concept.replacedBy)"
                     @click="loadConcept($event, concept.replacedBy)"
-                    :aria-label="toConceptPageAriaMessage"
                   >
                     {{ concept.replacingLabel }}
+                    <span class="visually-hidden">{{ toConceptPageAriaMessage }}</span>
                   </a>
                 </template>
                 <template v-else>
                   <a :class="{ 'selected': selectedConcept === concept.uri }"
                     :href="getConceptURL(concept.uri)"
                     @click="loadConcept($event, concept.uri)"
-                    :aria-label="toConceptPageAriaMessage"
                   >
                     {{ concept.prefLabel }}
+                    <span class="visually-hidden">{{ toConceptPageAriaMessage }}</span>
                   </a>
                 </template>
               </li>

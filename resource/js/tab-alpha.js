@@ -284,9 +284,9 @@ function startAlphaApp () {
               </template>
               <a :class="{ 'selected': selectedConcept === concept.uri }"
                 :href="getConceptURL(concept.uri)" @click="loadConcept($event, concept.uri)"
-                :aria-label="toConceptPageAriaMessage"
               >
                 {{ concept.prefLabel }}{{ showNotation && concept.qualifier ? ' (' + concept.qualifier + ')' : '' }}
+                <span class="visually-hidden">{{ toConceptPageAriaMessage }}</span>
               </a>
             </li>
             <template v-if="loadingMoreConcepts">

@@ -65,7 +65,7 @@ describe('Groups tab', () => {
     // Check that hierarchy button has correct Aria label
     cy.get('#groups-list').find('ul.list-group button').should('have.attr', 'aria-label', 'Open')
     // Check that concepts have correct Aria labels
-    cy.get('.concept-label a').first().should('have.attr', 'aria-label', 'Go to the concept page')
+    cy.get('.concept-label a span').eq(0).invoke('text').should('contain', 'Go to the concept page')
 
     // Go to test vocab home page in Finnish
     cy.visit('/yso/fi/')
@@ -74,7 +74,7 @@ describe('Groups tab', () => {
     // Check that hierarchy button has correct Aria label
     cy.get('#groups-list').find('ul.list-group button').should('have.attr', 'aria-label', 'Avaa')
     // Check that concepts have correct Aria labels
-    cy.get('.concept-label a').first().should('have.attr', 'aria-label', 'Mene käsitesivulle')
+    cy.get('.concept-label a span').eq(0).invoke('text').should('contain', 'Mene käsitesivulle')
 
     // Go to test vocab home page in Swedish
     cy.visit('/yso/sv/')
@@ -83,7 +83,7 @@ describe('Groups tab', () => {
     // Check that hierarchy button has correct Aria label
     cy.get('#groups-list').find('ul.list-group button').should('have.attr', 'aria-label', 'Öppna')
     // Check that concepts have correct Aria labels
-    cy.get('.concept-label a').first().should('have.attr', 'aria-label', 'Gå till begreppssidan')
+    cy.get('.concept-label a span').eq(0).invoke('text').should('contain', 'Gå till begreppssidan')
 
   })
 })
