@@ -19,13 +19,13 @@ function startGlobalSearchApp () {
     },
     computed: {
       vocabSelectorPlaceholder () {
-        return $t('1. Choose vocabulary')
+        return $t('Choose vocabulary')
       },
       langSelectorPlaceholder () {
-        return $t('2. Choose language')
+        return $t('Choose language')
       },
       searchPlaceholder () {
-        return $t('3. Enter search term')
+        return $t('Enter search term')
       },
       anyLanguage () {
         return $t('Any language')
@@ -33,14 +33,20 @@ function startGlobalSearchApp () {
       noResults () {
         return $t('No results')
       },
+      selectSearchVocabAriaMessage () {
+        return $t('Select search vocabularies')
+      },
       selectSearchLanguageAriaMessage () {
         return $t('Select search language')
       },
-      textInputWithDropdownButtonAriaMessage () {
-        return $t('Text input with dropdown button')
+      searchFieldAriaMessage () {
+        return $t('Enter search term')
       },
-      searchAriaMessage () {
+      searchButtonAriaMessage () {
         return $t('Search')
+      },
+      clearSearchAriaMessage () {
+        return $t('Clear search field')
       },
       getSelectedVocabs () {
         return this.selectedVocabs.map(key => ({ key, value: this.vocabStrings[key] }))
@@ -261,6 +267,10 @@ function startGlobalSearchApp () {
         this.searchTerm = ''
         this.renderedResultsList = []
         this.hideAutoComplete()
+
+        this.$nextTick(() => {
+          this.$refs.globalSearchInputField.focus()
+        })
       },
       onLangMenuKeydown (e) {
         const items = Array.from(e.currentTarget.querySelectorAll('input'))
@@ -426,7 +436,7 @@ function startGlobalSearchApp () {
             data-bs-toggle="dropdown"
             data-bs-auto-close="outside"
             aria-expanded="false"
-            :aria-label="selectSearchLanguageAriaMessage"
+            :aria-label="selectSearchVocabAriaMessage"
             v-if="languageStrings"
             v-key-nav="dropdownKeyNav"
           >
@@ -493,11 +503,12 @@ function startGlobalSearchApp () {
         <div class="input-group flex-nowrap" id="search-form">
           <span id="headerbar-search" class="dropdown">
             <input type="search"
+              ref="globalSearchInputField"
               class="form-control"
               id="search-field"
               autocomplete="off"
               data-bs-toggle=""
-              :aria-label="textInputWithDropdownButtonAriaMessage"
+              :aria-label="searchFieldAriaMessage"
               :placeholder="searchPlaceholder"
               v-click-outside="hideAutoComplete"
               v-model="searchTerm"
@@ -589,10 +600,15 @@ function startGlobalSearchApp () {
               </li>
             </ul>
           </span>
-          <button id="clear-button" class="btn btn-danger" type="clear" v-if="searchTerm" @click="resetSearchTermAndHideDropdown()">
+          <button id="clear-button"
+                  class="btn btn-danger"
+                  :aria-label="clearSearchAriaMessage"
+                  type="clear"
+                  v-if="searchTerm"
+                  @click="resetSearchTermAndHideDropdown()">
             <i class="fa-solid fa-xmark"></i>
           </button>
-          <button id="search-button" class="btn btn-outline-secondary" :aria-label="searchAriaMessage" @click="gotoSearchPage()">
+          <button id="search-button" class="btn btn-outline-secondary" :aria-label="searchButtonAriaMessage" @click="gotoSearchPage()">
             <i class="fa-solid fa-magnifying-glass"></i>
           </button>
         </div>

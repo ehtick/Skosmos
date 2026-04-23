@@ -1,4 +1,4 @@
-/* global Vue, $t, onTranslationReady */
+/* global Vue, bootstrap, $t, onTranslationReady */
 
 function startVocabSearchApp () {
   const vocabSearch = Vue.createApp({
@@ -10,13 +10,14 @@ function startVocabSearchApp () {
         renderedResultsList: [],
         languageStrings: null,
         uriPrefixes: {},
-        showDropdown: false,
+        showAutoCompleteDropdown: false,
+        focusedLangIndex: -1,
         showNotation: null
       }
     },
     computed: {
       searchPlaceholder () {
-        return $t('Search...')
+        return $t('Search in this vocabulary')
       },
       anyLanguages () {
         return $t('Any language')
@@ -27,11 +28,14 @@ function startVocabSearchApp () {
       selectSearchLanguageAriaMessage () {
         return $t('Select search language')
       },
-      textInputWithDropdownButtonAriaMessage () {
-        return $t('Text input with dropdown button')
+      searchFieldAriaMessage () {
+        return $t('Search in this vocabulary')
       },
-      searchAriaMessage () {
+      searchButtonAriaMessage () {
         return $t('Search')
+      },
+      clearSearchAriaMessage () {
+        return $t('Clear search field')
       }
     },
     mounted () {
@@ -41,6 +45,20 @@ function startVocabSearchApp () {
       this.renderedResultsList = []
       this.uriPrefixes = {}
       this.showNotation = window.SKOSMOS.showNotation
+
+      this.langMenuKeydownHandler = (e) => {
+        // Bypass Bootstrap event listener on window level
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+          if (e.target.closest('#language-selector') && e.target.className === 'dropdown-item') {
+            e.stopImmediatePropagation()
+            this.onLangMenuKeydown(e)
+          }
+        }
+      }
+      window.addEventListener('keydown', this.langMenuKeydownHandler, true)
+    },
+    beforeUnmount () {
+      window.removeEventListener('keydown', this.langMenuKeydownHandler, true)
     },
     methods: {
       autoComplete () {
@@ -198,7 +216,7 @@ function startVocabSearchApp () {
         this.showAutoComplete()
       },
       hideAutoComplete () {
-        this.showDropdown = false
+        this.showAutoCompleteDropdown = false
         this.$forceUpdate()
       },
       gotoSearchPage () {
@@ -232,50 +250,128 @@ function startVocabSearchApp () {
         this.searchTerm = ''
         this.renderedResultsList = []
         this.hideAutoComplete()
+
+        this.$nextTick(() => {
+          this.$refs.searchInputField.focus()
+        })
       },
       /*
       * Show the existing autocomplete list if it was hidden by onClickOutside()
       */
       showAutoComplete () {
-        this.showDropdown = true
+        this.showAutoCompleteDropdown = true
         this.$forceUpdate()
+      },
+      onLangMenuKeydown (event) {
+        const items = this.$refs.langMenu.querySelectorAll('[role="menuitemradio"]')
+        switch (event.key) {
+          case 'ArrowDown': {
+            event.preventDefault()
+            if (this.focusedLangIndex === items.length) {
+              this.focusedLangIndex = 0
+              items[this.focusedLangIndex].focus()
+            } else {
+              this.focusedLangIndex = (this.focusedLangIndex + 1) % items.length
+              items[this.focusedLangIndex].focus()
+            }
+            break
+          }
+          case 'ArrowUp': {
+            event.preventDefault()
+            if (this.focusedLangIndex === 0) {
+              this.closeLangMenu()
+            }
+            this.focusedLangIndex =
+              (this.focusedLangIndex - 1 + items.length) % items.length
+            items[this.focusedLangIndex].focus()
+            break
+          }
+          case 'Enter':
+          case ' ': {
+            event.preventDefault()
+            if (event.target.classList.contains('dropdown-toggle')) {
+              this.openLangMenu()
+            } else {
+              this.changeContentLangAndReload(Object.keys(this.languageStrings)[this.focusedLangIndex])
+            }
+            break
+          }
+          case 'Escape': {
+            this.closeLangMenu()
+            break
+          }
+        }
+      },
+      openLangMenu () {
+        const btn = this.$refs.langButton
+        const dropdown = bootstrap.Dropdown.getOrCreateInstance(btn)
+        dropdown.show()
+
+        this.$nextTick(() => {
+          const items = this.$refs.langMenu.querySelectorAll('[role="menuitemradio"]')
+
+          this.focusedLangIndex = Math.max(
+            0,
+            Object.keys(this.languageStrings).indexOf(this.selectedLanguage)
+          )
+
+          items[this.focusedLangIndex]?.focus()
+        })
+      },
+
+      closeLangMenu () {
+        const btn = this.$refs.langButton
+        const dropdown = bootstrap.Dropdown.getOrCreateInstance(btn)
+        dropdown.hide()
+
+        this.focusedLangIndex = -1
+        this.$nextTick(() => {
+          this.$refs.langButton.focus()
+        })
       }
     },
     template: `
       <div class="input-group ps-xl-2 flex-nowrap" id="search-wrapper">
 
       <div class="dropdown" id="language-selector">
-        <button class="btn btn-outline-secondary dropdown-toggle"
-          role="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-          :aria-label="selectSearchLanguageAriaMessage"
-          v-if="languageStrings">
-          {{ languageStrings[selectedLanguage] }}
-          <i class="fa-solid fa-chevron-down"></i>
-        </button>
-        <ul class="dropdown-menu" id="language-list" role="menu">
-          <li v-for="(value, key) in languageStrings" :key="key" role="none">
-            <a
-              class="dropdown-item"
-              :value="key"
+          <button
+            ref="langButton"
+            class="btn btn-outline-secondary dropdown-toggle"
+            data-bs-toggle="dropdown"
+            @keydown="onLangMenuKeydown"
+            aria-haspopup="true"
+            :aria-label="selectSearchLanguageAriaMessage">
+            <template v-if="languageStrings">{{ languageStrings[selectedLanguage] }}</template>
+            <i class="chevron fa-solid fa-chevron-down"></i>
+          </button>
+
+          <ul
+            ref="langMenu"
+            id="language-list"
+            class="dropdown-menu"
+            role="menu">
+            <li
+              v-for="(value, key, index) in languageStrings"
+              :key="key"
+              role="menuitemradio"
+              :aria-checked="selectedLanguage === key"
+              :tabindex="focusedLangIndex === index ? 0 : -1"
               @click="changeContentLangAndReload(key)"
-              @keydown.enter="changeContentLangAndReload(key)"
-              role="menuitem"
-              tabindex=0 >
+              @focus="focusedLangIndex = index"
+              class="dropdown-item">
               {{ value }}
-            </a>
-          </li>
-        </ul>
-      </div>
+            </li>
+          </ul>
+        </div>
 
         <span id="headerbar-search" class="dropdown">
           <input type="search"
+            ref="searchInputField"
             class="form-control"
             id="search-field"
             autocomplete="off"
             data-bs-toggle=""
-            :aria-label="textInputWithDropdownButtonAriaMessage"
+            :aria-label="searchFieldAriaMessage"
             :placeholder="searchPlaceholder"
             v-click-outside="hideAutoComplete"
             v-model="searchTerm"
@@ -284,7 +380,7 @@ function startVocabSearchApp () {
             @click="showAutoComplete()">
           <ul id="search-autocomplete-results"
               class="dropdown-menu w-100"
-              :class="{ 'show': showDropdown }"
+              :class="{ 'show': showAutoCompleteDropdown }"
               aria-labelledby="search-field">
             <li class="autocomplete-result container" v-for="result in renderedResultsList"
               :key="result.prefLabel" >
@@ -367,10 +463,15 @@ function startVocabSearchApp () {
             </li>
           </ul>
         </span>
-        <button id="clear-button" class="btn btn-danger" type="clear" v-if="searchTerm" @click="resetSearchTermAndHideDropdown()">
+        <button id="clear-button"
+                class="btn btn-danger"
+                type="clear"
+                :aria-label="clearSearchAriaMessage"
+                v-if="searchTerm"
+                @click="resetSearchTermAndHideDropdown()">
           <i class="fa-solid fa-xmark"></i>
         </button>
-        <button id="search-button" class="btn btn-outline-secondary" :aria-label="searchAriaMessage" @click="gotoSearchPage()">
+        <button id="search-button" class="btn btn-outline-secondary" :aria-label="searchButtonAriaMessage" @click="gotoSearchPage()">
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
       </div>

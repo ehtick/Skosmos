@@ -15,7 +15,7 @@ describe('Front page -> lang -> vocab -> cLang -> search -> concept page', () =>
 
     // Open the language drop-down and select "fi" for the search language
     cy.get('#language-selector button').click();
-    cy.contains('#language-list li a', 'Finnish').click();
+    cy.contains('#language-selector li', 'Finnish').click();
 
     // Write a search term "arkeologia" and press enter
     cy.get('#search-field').type('arkeolog').type('{enter}');

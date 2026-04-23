@@ -281,7 +281,7 @@ header .container-fluid .row {
   color: var(--headerbar-text);
 }
 
-#search-wrapper .dropdown-menu li label:hover, #search-wrapper .dropdown-menu li a:hover {
+#search-wrapper .dropdown-menu li label:hover, #search-wrapper .dropdown-menu li:hover {
   color: var(--search-dropdown-hover-text);
 }
 
@@ -291,7 +291,7 @@ header .container-fluid .row {
   border: 1px solid var(--search-border);
   border-radius: 0;
   padding-left: 1rem;
-  padding-right: 1.5rem;
+  padding-right: 2.5rem;
 }
 
 #search-wrapper .dropdown-toggle:hover, #search-wrapper .dropdown-toggle.show {
@@ -309,9 +309,10 @@ header .container-fluid .row {
 
 #search-wrapper .chevron {
   position: absolute;
-  right: 0.5rem;
-  top: 33%;
-  display: block;
+  right: 1rem;
+  top: 50%;
+  transform: translate(0, -50%);
+
   z-index: 2;
 }
 
