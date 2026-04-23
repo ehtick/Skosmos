@@ -6,8 +6,8 @@ describe('Vocab search bar', () => {
       cy.visit('/yso/fi/')
 
       // Select a language option from the dropdown
-      cy.get('#language-selector .dropdown-toggle').click();
-      cy.get('#language-list .dropdown-item').contains('ruotsi').click();
+      cy.get('#language-selector button').click();
+      cy.get('#language-selector .dropdown-item').contains('ruotsi').click();
 
       // Enter a search term
       cy.get('#search-wrapper input').type('Katt');
@@ -24,8 +24,8 @@ describe('Vocab search bar', () => {
       cy.visit('/yso/fi/')
 
       // Choose 'all' languages from the dropdown
-      cy.get('#language-selector .dropdown-toggle').click();
-      cy.get('#language-list .dropdown-item').get('a[value="all"]').click();
+      cy.get('#language-selector button').click();
+      cy.get('#language-selector .dropdown-item').contains('kaikilla kielillä').click();
 
       // Enter a search term
       cy.get('#search-wrapper input').type('Katt');
@@ -42,8 +42,8 @@ describe('Vocab search bar', () => {
       cy.visit('/yso/fi/')
 
       // Choose 'sv' for search & content language
-      cy.get('#language-selector .dropdown-toggle').click();
-      cy.get('#language-list .dropdown-item').contains('ruotsi').click();
+      cy.get('#language-selector button').click();
+      cy.get('#language-selector .dropdown-item').contains('ruotsi').click();
 
       //SKOSMOS object should have Swedish as the content language
       cy.window().then((win) => {
@@ -51,8 +51,8 @@ describe('Vocab search bar', () => {
       })
 
       // Choose 'all' for search language
-      cy.get('#language-selector .dropdown-toggle').click();
-      cy.get('#language-list .dropdown-item').get('a[value="all"]').click();
+      cy.get('#language-selector button').click();
+      cy.get('#language-selector .dropdown-item').contains('kaikilla kielillä').click();
 
       // Verify the search page url has the previously chosen language as the content language
       cy.url().should('include', 'clang=sv');
@@ -68,18 +68,16 @@ describe('Vocab search bar', () => {
 
       // check that the vocabulary languages can be found in the search bar language dropdown menu
       cy.window().then((win) => {
-        cy.get('#language-list .dropdown-item').then($elements => {
-          const actualLanguages = $elements.map((index, el) => Cypress.$(el).attr('value')).get();
+        cy.get('#language-selector .dropdown-item').then($elements => {
+          const actualLanguages = $elements.map((index, el) => Cypress.$(el).text()).get();
 
-          const expectedLanguages = ['fi', 'sv', 'se', 'en', 'all'];
-
-          // The two language lists should be of equal length and all of the expected languages can be found
+          const expectedLanguages = ['Finnish','English','Northern Sami','Swedish','Any language'];
           expect(expectedLanguages).to.have.lengthOf(actualLanguages.length);
           expectedLanguages.forEach(lang => { expect(actualLanguages).to.include(lang); });
         })
       })
     })
-  });
+  })
 
   describe('Autocomplete', () => {
     it('Writing in the text field triggers the autocomplete results list', () => {
@@ -175,8 +173,8 @@ describe('Vocab search bar', () => {
       cy.visit('/yso/sv/')
 
       // Choose 'fi' for search & content language
-      cy.get('#language-selector .dropdown-toggle').click();
-      cy.get('#language-list .dropdown-item').contains('finska').click();
+      cy.get('#language-selector button').click();
+      cy.get('#language-selector .dropdown-item').contains('finska').click();
 
       // Searchg for 'kissa'
       cy.get('#search-field').type('aarre');
@@ -194,8 +192,8 @@ describe('Vocab search bar', () => {
       cy.visit('/test/en/')
 
       // Choose English from the language dropdown
-      cy.get('#language-selector .dropdown-toggle').click();
-      cy.get('#language-list .dropdown-item').contains('English').click();
+      cy.get('#language-selector button').click();
+      cy.get('#language-selector .dropdown-item').contains('English').click();
 
       // Enter a search term
       cy.get('#search-wrapper input').type('Bass');
@@ -213,8 +211,8 @@ describe('Vocab search bar', () => {
       cy.visit('/groups/en/')
 
       // Choose English from the language dropdown
-      cy.get('#language-selector .dropdown-toggle').click();
-      cy.get('#language-list .dropdown-item').contains('English').click();
+      cy.get('#language-selector button').click();
+      cy.get('#language-selector .dropdown-item').contains('English').click();
 
       // Enter a search term
       cy.get('#search-wrapper input').type('Fish');
@@ -332,6 +330,21 @@ describe('Vocab search bar', () => {
         cy.get('li').eq(0).invoke('text').should('contain', 'Inga sökresultat') // the single result should display a no results message
       })
 
+    })
+  })
+  describe('Keyboard navigation', () => {
+    it('Content language can be chosen with keyboard', () => {
+      cy.visit('/yso/fi/')
+
+      cy.get('button[aria-label="Valitse hakukieli"]')
+        .focus()
+        .should('have.focus')
+
+      cy.focused().type('{downarrow}{downarrow}')
+      cy.focused().should('contain.text', 'englanti')
+
+      cy.focused().type('{enter}')
+      cy.url().should('include', 'clang=en')
     })
   })
 })
