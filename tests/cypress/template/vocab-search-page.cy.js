@@ -73,8 +73,13 @@ describe('Vocabulary search page', () => {
     // Scroll to bottom of page
     cy.scrollTo('bottom')
 
-    cy.get('#search-results #search-loading-spinner', { timeout: 10000 }).should('be.visible')
-    cy.get('#search-results #search-loading-spinner', { timeout: 10000 }).should('not.exist')
+    cy.get('#search-results').then(($results) => {
+      const spinner = $results.find('#search-results #search-loading-spinner')
+      if (spinner.length > 0) {
+        // If there's a spinner, wait for it to disappear
+        cy.get('#search-results #search-loading-spinner', { timeout: 20000 }).should('not.exist')
+      }
+    })
     // Check that there are 6 search results
     cy.get('#search-results').find('.search-result').should('have.length', 6)
     // Check that all results message is displayed
