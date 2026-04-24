@@ -72,8 +72,11 @@ describe('Vocabulary search page', () => {
     cy.get('#search-results').find('.search-result').should('have.length', 5)
     // Scroll to bottom of page
     cy.scrollTo('bottom')
+
+    cy.get('#search-results #search-loading-spinner', { timeout: 10000 }).should('be.visible')
+    cy.get('#search-results #search-loading-spinner', { timeout: 10000 }).should('not.exist')
     // Check that there are 6 search results
-    cy.get('#search-results').find('.search-result').should('have.length', 6, {'timeout': 20000})
+    cy.get('#search-results').find('.search-result').should('have.length', 6)
     // Check that all results message is displayed
     cy.get('#search-count').invoke('text').should('contain', 'All 6 results displayed')
   })
