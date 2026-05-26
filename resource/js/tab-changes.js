@@ -193,11 +193,19 @@ function startChangesApp () {
     props: ['changedConcepts', 'selectedConcept', 'loadingConcepts', 'loadingMoreConcepts', 'loadingMessage', 'toConceptPageAriaMessage', 'listStyle'],
     data () {
       return {
-        conceptInFocus: 0
+        conceptInFocus: 0,
+        changedConceptsLength: 0
       }
     },
-    computed: {
-      indexedConcepts () {
+    inject: ['partialPageLoad', 'getConceptURL'],
+    emits: ['selectConcept'],
+    methods: {
+      loadConcept (event, uri, i) {
+        this.conceptInFocus = i
+        partialPageLoad(event, getConceptURL(uri))
+        this.$emit('selectConcept', uri)
+      },
+      getIndexedConcepts () {
         // Give each uri and replacedBy in changedConcepts a unique index for keyboard navigation
         let counter = 0
 
@@ -211,21 +219,8 @@ function startChangesApp () {
             })
           ])
         )
+        this.changedConceptsLength = counter
         return indexed
-      },
-      changedConceptsLength () {
-        return [...this.changedConcepts.values()]
-          .flat()
-          .reduce((acc, entry) => acc + 1 + (entry.replacedBy ? 1 : 0), 0)
-      }
-    },
-    inject: ['partialPageLoad', 'getConceptURL'],
-    emits: ['selectConcept'],
-    methods: {
-      loadConcept (event, uri, i) {
-        this.conceptInFocus = i
-        partialPageLoad(event, getConceptURL(uri))
-        this.$emit('selectConcept', uri)
       },
       handleKeydownEvent (e) {
         if (e.key === ' ') {
@@ -268,7 +263,7 @@ function startChangesApp () {
         </template>
         <template v-else>
           <ul class="list-group" v-if="changedConcepts.length !== 0">
-            <template v-for="[month, concepts] in indexedConcepts">
+            <template v-for="[month, concepts] in getIndexedConcepts()">
               <li class="list-group-item py-1 px-2">
                 <h2 class="pb-1">{{ month }}</h2>
               </li>
