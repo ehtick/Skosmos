@@ -267,6 +267,16 @@ function startAlphaApp () {
             this.conceptInFocus -= 1
           }
           this.$refs['concept' + this.conceptInFocus][0].focus()
+        } else if (e.key === 'End') {
+          // Move focus to last list item
+          e.preventDefault()
+          this.conceptInFocus = this.indexConcepts.length - 1
+          this.$refs['concept' + this.conceptInFocus][0].focus()
+        } else if (e.key === 'Home') {
+          // Move focus to first list item
+          e.preventDefault()
+          this.conceptInFocus = 0
+          this.$refs['concept' + this.conceptInFocus][0].focus()
         }
       }
     },
