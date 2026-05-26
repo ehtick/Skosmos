@@ -109,5 +109,27 @@ describe('New and removed view', () => {
     // Check that concepts have correct Aria labels
     cy.get('#tab-changes').find('.sidebar-list li a span').eq(0).invoke('text').should('contain', 'Gå till begreppssidan')
 
-  })  
+  })
+  it('Keyboard navigation', () => {
+    // go to YSO vocab front page in English
+    cy.visit('/yso/en/')
+    // Click on changes tab and wait until list has loaded
+    cy.get('#changes').click()
+    cy.get('#tab-changes').find('.sidebar-list li a span').eq(0)
+    // Press tab key
+    cy.press(Cypress.Keyboard.Keys.TAB)
+    // Check that first list item has focus
+    cy.get('#tab-changes').find('.sidebar-list a').eq(0).should('have.focus')
+    // Press down arrow key
+    cy.press(Cypress.Keyboard.Keys.DOWN)
+    // Check that second list item has focus
+    cy.get('#tab-changes').find('.sidebar-list a').eq(1).should('have.focus')
+    // Press up arrow key
+    cy.press(Cypress.Keyboard.Keys.UP)
+    // Check that first list item has focus again
+    cy.get('#tab-changes').find('.sidebar-list a').eq(0).should('have.focus')
+    // Check that pressing space opens concept page
+    cy.press(Cypress.Keyboard.Keys.SPACE)
+    cy.get('#concept-heading h1', {'timeout': 15000}).invoke('text').should('equal', 'Bell beaker culture')
+  })
 })

@@ -230,16 +230,54 @@ function startAlphaApp () {
       'chooseLetterMessage',
       'ariaLiveMessage'
     ],
+    data () {
+      return {
+        conceptInFocus: 0
+      }
+    },
     emits: ['loadConcepts', 'selectConcept'],
     inject: ['partialPageLoad', 'getConceptURL', 'showNotation'],
     methods: {
       loadConcepts (event, letter) {
         event.preventDefault()
+        this.conceptInFocus = 0
         this.$emit('loadConcepts', letter)
       },
-      loadConcept (event, uri) {
+      loadConcept (event, uri, i) {
+        this.conceptInFocus = i
         partialPageLoad(event, getConceptURL(uri))
         this.$emit('selectConcept', uri)
+      },
+      handleKeydownEvent (e) {
+        if (e.key === ' ') {
+          // Click on link currently in focus
+          e.preventDefault()
+          this.$refs['concept' + this.conceptInFocus][0].click()
+        } else if (e.key === 'ArrowDown') {
+          // On last element move focus to first list item, otherwise next list item
+          e.preventDefault()
+          this.conceptInFocus = (this.conceptInFocus + 1) % this.indexConcepts.length
+          this.$refs['concept' + this.conceptInFocus][0].focus()
+        } else if (e.key === 'ArrowUp') {
+          // On first element move focus to last list item, otherwise to previous list item
+          e.preventDefault()
+          if (this.conceptInFocus === 0) {
+            this.conceptInFocus = this.indexConcepts.length - 1
+          } else {
+            this.conceptInFocus -= 1
+          }
+          this.$refs['concept' + this.conceptInFocus][0].focus()
+        } else if (e.key === 'End') {
+          // Move focus to last list item
+          e.preventDefault()
+          this.conceptInFocus = this.indexConcepts.length - 1
+          this.$refs['concept' + this.conceptInFocus][0].focus()
+        } else if (e.key === 'Home') {
+          // Move focus to first list item
+          e.preventDefault()
+          this.conceptInFocus = 0
+          this.$refs['concept' + this.conceptInFocus][0].focus()
+        }
       }
     },
     template: `
@@ -269,7 +307,7 @@ function startAlphaApp () {
         </fieldset>
       </template>
       
-      <div class="sidebar-list" :style="listStyle" ref="list">
+      <div class="sidebar-list" tabindex="-1" :style="listStyle" ref="list">
         <template v-if="loadingConcepts || loadingLetters">
           <div>
             {{ this.loadingMessage }} <i class="fa-solid fa-spinner fa-spin-pulse"></i>
@@ -277,13 +315,17 @@ function startAlphaApp () {
         </template>
         <template v-else>
           <ul class="list-group" v-if="indexConcepts.length !== 0">
-            <li v-for="concept in indexConcepts" class="list-group-item py-1 px-2">
+            <li v-for="(concept, i) in indexConcepts" class="list-group-item py-1 px-2">
               <template v-if="concept.altLabel">
                 <span class="fst-italic">{{ concept.altLabel }}</span>
                 <i class="fa-solid fa-arrow-right"></i>
               </template>
               <a :class="{ 'selected': selectedConcept === concept.uri }"
-                :href="getConceptURL(concept.uri)" @click="loadConcept($event, concept.uri)"
+                :href="getConceptURL(concept.uri)"
+                :tabindex="i === conceptInFocus ? 0 : -1"
+                :ref="'concept' + i"
+                @click="loadConcept($event, concept.uri, i)"
+                @keydown="handleKeydownEvent($event)"
               >
                 {{ concept.prefLabel }}{{ showNotation && concept.qualifier ? ' (' + concept.qualifier + ')' : '' }}
                 <span class="visually-hidden">{{ toConceptPageAriaMessage }}</span>
