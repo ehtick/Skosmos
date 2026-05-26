@@ -144,5 +144,19 @@ describe('Alphabetical index', () => {
     cy.get('.aria-live-message').invoke('text').should('equal', 'Concepts loaded for letter B')
     // Check that new concepts are loaded
     cy.get('#tab-alphabetical').find('.sidebar-list li').first().invoke('text').should('contain', 'birch bark manuscripts')
+    
+    // Focus on first index letter and press tab
+    cy.get('.letters input').first().focus()
+    cy.press(Cypress.Keyboard.Keys.TAB)
+    // Check that first list item has focus
+    cy.get('#tab-alphabetical').find('.sidebar-list li').eq(0).should('have.focus')
+    // Press down arrow key
+    cy.press(Cypress.Keyboard.Keys.DOWN)
+    // Check that second list item has focus
+    cy.get('#tab-alphabetical').find('.sidebar-list li').eq(1).should('have.focus')
+    // Press up arrow key
+    cy.press(Cypress.Keyboard.Keys.UP)
+    // Check that first list item has focus again
+    cy.get('#tab-alphabetical').find('.sidebar-list li').eq(0).should('have.focus')
   })
 })

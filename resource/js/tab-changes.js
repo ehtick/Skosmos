@@ -191,16 +191,66 @@ function startChangesApp () {
 
   tabChangesApp.component('tab-changes', {
     props: ['changedConcepts', 'selectedConcept', 'loadingConcepts', 'loadingMoreConcepts', 'loadingMessage', 'toConceptPageAriaMessage', 'listStyle'],
+    data () {
+      return {
+        conceptInFocus: 0
+      }
+    },
+    computed: {
+      indexedConcepts () {
+        // Give each uri and replacedBy in changedConcepts a unique index for keyboard navigation
+        let counter = 0
+
+        const indexed = new Map(
+          [...this.changedConcepts].map(([month, entries]) => [
+            month,
+            entries.map(entry => {
+              const result = { ...entry, index: counter++ }
+              if (entry.replacedBy) result.replacedByIndex = counter++
+              return result
+            })
+          ])
+        )
+        return indexed
+      },
+      changedConceptsLength () {
+        return [...this.changedConcepts.values()]
+          .flat()
+          .reduce((acc, entry) => acc + 1 + (entry.replacedBy ? 1 : 0), 0)
+      }
+    },
     inject: ['partialPageLoad', 'getConceptURL'],
     emits: ['selectConcept'],
     methods: {
-      loadConcept (event, uri) {
+      loadConcept (event, uri, i) {
+        this.conceptInFocus = i
         partialPageLoad(event, getConceptURL(uri))
         this.$emit('selectConcept', uri)
+      },
+      handleKeydownEvent(e) {
+        if (e.key === ' ') {
+          // Click on link currently in focus
+          e.preventDefault()
+          this.$refs['concept' + this.conceptInFocus][0].click()
+        } else if (e.key === 'ArrowDown') {
+          // On last element move focus to first list item, otherwise next list item
+          e.preventDefault()
+          this.conceptInFocus = (this.conceptInFocus + 1) % this.changedConceptsLength
+          this.$refs['concept' + this.conceptInFocus][0].focus()
+        } else if (e.key === 'ArrowUp') {
+          // On first element move focus to last list item, otherwise to previous list item
+          e.preventDefault()
+          if (this.conceptInFocus === 0) {
+            this.conceptInFocus = this.changedConceptsLength - 1
+          } else {
+            this.conceptInFocus -= 1
+          }
+          this.$refs['concept' + this.conceptInFocus][0].focus()
+        }
       }
     },
     template: `
-      <div class="sidebar-list pt-3" :style="listStyle" ref="list">
+      <div class="sidebar-list pt-3" tabindex="-1" :style="listStyle" ref="list">
         <template v-if="loadingConcepts">
           <div>
             {{ loadingMessage }} <i class="fa-solid fa-spinner fa-spin-pulse"></i>
@@ -208,7 +258,7 @@ function startChangesApp () {
         </template>
         <template v-else>
           <ul class="list-group" v-if="changedConcepts.length !== 0">
-            <template v-for="[month, concepts] in changedConcepts">
+            <template v-for="[month, concepts] in indexedConcepts">
               <li class="list-group-item py-1 px-2">
                 <h2 class="pb-1">{{ month }}</h2>
               </li>
@@ -216,7 +266,10 @@ function startChangesApp () {
                 <template v-if="concept.replacedBy">
                   <a :class="{ 'selected': selectedConcept === concept.uri }"
                     :href="getConceptURL(concept.uri)"
-                    @click="loadConcept($event, concept.uri)"
+                    :tabindex="concept.index === conceptInFocus ? 0 : -1"
+                    :ref="'concept' + concept.index"
+                    @click="loadConcept($event, concept.uri, concept.index)"
+                    @keydown="handleKeydownEvent($event)"
                   >
                     <s>{{ concept.prefLabel }}</s>
                     <span class="visually-hidden">{{ toConceptPageAriaMessage }}</span>
@@ -224,7 +277,10 @@ function startChangesApp () {
                   <i class="fa-solid fa-arrow-right"></i>
                   <a :class="{ 'selected': selectedConcept === concept.replacedBy }"
                     :href="getConceptURL(concept.replacedBy)"
-                    @click="loadConcept($event, concept.replacedBy)"
+                    :tabindex="concept.replacedByIndex === conceptInFocus ? 0 : -1"
+                    :ref="'concept' + concept.replacedByIndex"
+                    @click="loadConcept($event, concept.replacedBy, concept.replacedByIndex)"
+                    @keydown="handleKeydownEvent($event)"
                   >
                     {{ concept.replacingLabel }}
                     <span class="visually-hidden">{{ toConceptPageAriaMessage }}</span>
@@ -233,7 +289,10 @@ function startChangesApp () {
                 <template v-else>
                   <a :class="{ 'selected': selectedConcept === concept.uri }"
                     :href="getConceptURL(concept.uri)"
-                    @click="loadConcept($event, concept.uri)"
+                    :tabindex="concept.index === conceptInFocus ? 0 : -1"
+                    :ref="'concept' + concept.index"
+                    @click="loadConcept($event, concept.uri, concept.index)"
+                    @keydown="handleKeydownEvent($event)"
                   >
                     {{ concept.prefLabel }}
                     <span class="visually-hidden">{{ toConceptPageAriaMessage }}</span>
