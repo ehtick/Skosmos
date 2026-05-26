@@ -157,5 +157,8 @@ describe('Alphabetical index', () => {
     cy.press(Cypress.Keyboard.Keys.UP)
     // Check that first list item has focus again
     cy.get('#tab-alphabetical').find('.sidebar-list li a').eq(0).should('have.focus')
+    // Check that pressing space opens concept page
+    cy.press(Cypress.Keyboard.Keys.SPACE)
+    cy.get('#concept-heading h1', {'timeout': 15000}).invoke('text').should('equal', 'birch bark manuscripts')
   })
 })
