@@ -248,7 +248,7 @@ function startAlphaApp () {
         partialPageLoad(event, getConceptURL(uri))
         this.$emit('selectConcept', uri)
       },
-      handleKeydownEvent(e) {
+      handleKeydownEvent (e) {
         if (e.key === ' ') {
           // Click on link currently in focus
           e.preventDefault()
