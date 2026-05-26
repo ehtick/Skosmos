@@ -129,4 +129,3 @@ describe('New and removed view', () => {
     cy.get('#tab-changes').find('.sidebar-list a').eq(0).should('have.focus')
   })
 })
-
