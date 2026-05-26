@@ -6,7 +6,7 @@
   "version": "3.3-dev",
   "require": {
     "sweetrdf/easyrdf": "~1.18.2",
-    "twig/twig": "3.22.*",
+    "twig/twig": "^3.26.0",
     "willdurand/negotiation": "3.1.*",
     "punic/punic": "3.8.*",
     "ml/json-ld": "1.*",
