@@ -543,7 +543,7 @@ function startHierarchyApp () {
             // If right arrow key is pressed on a closed concept, open it
             c.isOpen = true
             this.$emit('loadChildren', c)
-          } else if (c.hasChildren) {
+          } else if (c.children.length > 0) {
             // If right arrow is pressed on a open concept, move focus to first child
             this.$emit('moveFocus', c.index + 1)
           }

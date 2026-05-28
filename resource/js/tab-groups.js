@@ -9,7 +9,8 @@ function startGroupsApp () {
         selectedGroup: '',
         loadingGroups: true,
         loadingChildren: [],
-        listStyle: {}
+        listStyle: {},
+        visibleConceptCount: 0
       }
     },
     provide () {
@@ -20,9 +21,6 @@ function startGroupsApp () {
       }
     },
     computed: {
-      openAriaMessage () {
-        return $t('Open')
-      },
       toConceptPageAriaMessage () {
         return $t('Go to the concept page')
       }
@@ -110,6 +108,7 @@ function startGroupsApp () {
                     this.setIsOpenAndAddMembers(result, this.selectedGroup, members)
 
                     this.groups = result
+                    this.addIndicesToGroups()
                     this.loadingGroups = false
                   })
               } else {
@@ -117,11 +116,13 @@ function startGroupsApp () {
                 this.setIsOpenAndAddMembers(result, this.selectedGroup, [])
 
                 this.groups = result
+                this.addIndicesToGroups()
                 this.loadingGroups = false
               }
             } else {
               // If we are on vocab home page, simply set groups to result
               this.groups = result
+              this.addIndicesToGroups()
               this.loadingGroups = false
             }
           })
@@ -177,21 +178,44 @@ function startGroupsApp () {
               for (const m of data.members) {
                 group.childGroups.push({ ...m, childGroups: [], isOpen: false, isGroup: false })
               }
+              this.addIndicesToGroups()
               this.loadingChildren = this.loadingChildren.filter(x => x !== group)
             })
+        } else if (group.childGroups.length > 0) {
+          // If the cgroup already has children loaded, update indices in groups
+          this.addIndicesToGroups()
         }
-      }
+      },
+      addIndicesToGroups () {
+        // Adds a unique index to each concept that is visible in DOM after groups is updated
+        let counter = 0
+
+        const traverse = (nodes, parentIsOpen) => {
+          for (const node of nodes) {
+            // Assign index only if parent is open
+            parentIsOpen ? node.index = counter++ : delete node.index
+
+            if (node.childGroups.length > 0) {
+              traverse(node.childGroups, node.isOpen && parentIsOpen)
+            }
+          }
+        }
+
+        traverse(this.groups, true)
+
+        this.visibleConceptCount = counter
+      },
     },
     template: `
       <div v-click-tab-groups="handleClickGroupsEvent" v-click-collapse-btn="setListStyle" v-resize-window="setListStyle">
-        <div id="groups-list" class="sidebar-list p-0" :style="listStyle">
-          <ul v-if="!loadingGroups" class="list-group">
+        <div id="groups-list" class="sidebar-list p-0" tabindex="-1" :style="listStyle">
+          <ul v-if="!loadingGroups" aria-labelledby="groups" role="tree" class="list-group">
             <tab-groups-wrapper
               :groups="groups"
               :selectedGroup="selectedGroup"
               :loadingChildren="loadingChildren"
-              :openAriaMessage="openAriaMessage"
               :toConceptPageAriaMessage="toConceptPageAriaMessage"
+              :visibleConceptCount="visibleConceptCount"
               @load-children="loadChildren($event)"
               @select-group="selectedGroup = $event"
             ></tab-groups-wrapper>
@@ -242,9 +266,12 @@ function startGroupsApp () {
   })
 
   tabGroupsApp.component('tab-groups-wrapper', {
-    props: ['groups', 'selectedGroup', 'loadingChildren', 'openAriaMessage', 'toConceptPageAriaMessage'],
+    props: ['groups', 'selectedGroup', 'loadingChildren', 'toConceptPageAriaMessage', 'visibleConceptCount'],
     emits: ['loadChildren', 'selectGroup'],
-    mounted () {
+    data () {
+      return {
+        conceptInFocus: 0
+      }
     },
     methods: {
       loadChildren (group) {
@@ -252,6 +279,33 @@ function startGroupsApp () {
       },
       selectGroup (group) {
         this.$emit('selectGroup', group)
+      },
+      handleKeydownEvent (e) {
+        if (e.key === ' ') {
+          // Click on link currently in focus
+          e.preventDefault()
+          document.getElementById('groups-concept' + this.conceptInFocus).click()
+        } else if (e.key === 'ArrowDown') {
+          // On last element move focus to first list item, otherwise next list item
+          e.preventDefault()
+          this.moveFocus((this.conceptInFocus + 1) % this.visibleConceptCount)
+        } else if (e.key === 'ArrowUp') {
+          // On first element move focus to last list item, otherwise to previous list item
+          e.preventDefault()
+          this.moveFocus(this.conceptInFocus === 0 ? this.visibleConceptCount - 1 : this.conceptInFocus - 1)
+        } else if (e.key === 'Home') {
+          // Move focus to first list item
+          e.preventDefault()
+          this.moveFocus(0)
+        } else if (e.key === 'End') {
+          // Move focus to last list item
+          e.preventDefault()
+          this.moveFocus(this.visibleConceptCount - 1)
+        }
+      },
+      moveFocus (i) {
+        this.conceptInFocus = i
+        document.getElementById('groups-concept' + this.conceptInFocus).focus()
       }
     },
     template: `
@@ -262,41 +316,78 @@ function startGroupsApp () {
           :isTopGroup="true"
           :isLast="i == groups.length - 1"
           :loadingChildren="loadingChildren"
-          :openAriaMessage="openAriaMessage"
           :toConceptPageAriaMessage="toConceptPageAriaMessage"
+          :conceptInFocus="conceptInFocus"
           @load-children="loadChildren($event)"
           @select-group="selectGroup($event)"
+          @link-keydown="handleKeydownEvent($event)"
+          @move-focus="moveFocus($event)"
         ></tab-groups>
       </template>
     `
   })
 
   tabGroupsApp.component('tab-groups', {
-    props: ['group', 'selectedGroup', 'isTopGroup', 'isLast', 'loadingChildren', 'openAriaMessage', 'toConceptPageAriaMessage'],
-    emits: ['loadChildren', 'selectGroup'],
+    props: ['group', 'selectedGroup', 'isTopGroup', 'isLast', 'loadingChildren', 'toConceptPageAriaMessage', 'conceptInFocus'],
+    emits: ['loadChildren', 'selectGroup', 'linkKeydown', 'closeParent', 'moveFocus'],
     inject: ['partialPageLoad', 'getConceptURL', 'showNotation'],
     methods: {
       handleClickOpenEvent (group) {
         group.isOpen = !group.isOpen
         this.$emit('loadChildren', group)
+        this.$emit('moveFocus', group.index)
       },
       handleClickGroupEvent (event, group) {
         group.isOpen = true
         this.$emit('loadChildren', group)
         this.$emit('selectGroup', group.uri)
+        this.$emit('moveFocus', group.index)
         this.partialPageLoad(event, this.getConceptURL(group.uri))
+      },
+      handleKeydownEvent (e, g) {
+        if (e.key === 'ArrowRight') {
+          if (!g.isOpen && g.hasMembers) {
+            // If right arrow key is pressed on a closed group, open it
+            g.isOpen = true
+            this.$emit('loadChildren', g)
+          } else if (g.childGroups.length > 0) {
+            // If right arrow is pressed on a open group, move focus to first child
+            this.$emit('moveFocus', g.index + 1)
+          }
+        } else if (e.key === 'ArrowLeft' && g.isOpen) {
+          // If left arrow key is pressed on an open group, close it
+          g.isOpen = false
+          this.$emit('loadChildren', g)
+        } else if (e.key === 'ArrowLeft') {
+          // If left arrow key is pressed on a closed group, close its parent
+          this.$emit('closeParent')
+        } else {
+          // Otherwise, deal with other key press types in tab-groups-wrapper
+          this.$emit('linkKeydown', e)
+        }
+      },
+      handleCloseParentEvent () {
+        // Close this group when left arrow key is pressed on a closed child
+        this.group.isOpen = false
+        this.$emit('loadChildren', this.group)
+        this.$emit('moveFocus', this.group.index)
       },
       loadChildrenRecursive (group) {
         this.$emit('loadChildren', group)
       },
       selectGroupRecursive (group) {
         this.$emit('selectGroup', group)
+      },
+      linkKeydownRecursive (event) {
+        this.$emit('linkKeydown', event)
+      },
+      moveFocusRecursive (index) {
+        this.$emit('moveFocus', index)
       }
     },
     template: `
       <li class="list-group-item p-0" :class="{ 'top-concept': isTopGroup }">
-        <button type="button" class="hierarchy-button btn btn-primary"
-          :aria-label="openAriaMessage"
+        <button type="button" class="hierarchy-button btn btn-primary" aria-hidden="true" tabindex="-1"
           :class="{ 'open': group.isOpen }"
           v-if="group.hasMembers"
           @click="handleClickOpenEvent(group)"
@@ -310,16 +401,22 @@ function startGroupsApp () {
           </template>
         </button>
         <span class="concept-label" :class="{ 'last': isLast }">
-          <a :class="{ 'selected': selectedGroup === group.uri, 'group': group.isGroup }"
+          <a role="treeitem"
+            :class="{ 'selected': selectedGroup === group.uri, 'group': group.isGroup }"
             :href="getConceptURL(group.uri)"
+            :tabindex="group.index === conceptInFocus ? 0 : -1"
+            :id="'groups-concept' + group.index"
+            :aria-expanded="group.hasMembers ? group.isOpen : null"
+            :aria-selected="group.uri === selectedGroup"
             @click="handleClickGroupEvent($event, group)"
+            @keydown="handleKeydownEvent($event, group)"
           >
             <span v-if="showNotation && group.notation" class="concept-notation">{{ group.notation }} </span>
             {{ group.prefLabel }}
             <span class="visually-hidden">{{ toConceptPageAriaMessage }}</span>
           </a>
         </span>
-        <ul class="list-group ps-3" v-if="group.childGroups.length !== 0 && group.isOpen">
+        <ul class="list-group ps-3" role="group" v-if="group.childGroups.length !== 0 && group.isOpen">
           <template v-for="(g, i) in group.childGroups">
             <tab-groups
               :group="g"
@@ -327,10 +424,13 @@ function startGroupsApp () {
               :isTopGroup="false"
               :isLast="i == group.childGroups.length - 1"
               :loadingChildren="loadingChildren"
-              :openAriaMessage="openAriaMessage"
               :toConceptPageAriaMessage="toConceptPageAriaMessage"
+              :conceptInFocus="conceptInFocus"
               @load-children="loadChildrenRecursive($event)"
               @select-group="selectGroupRecursive($event)"
+              @link-keydown="linkKeydownRecursive($event)"
+              @close-parent="handleCloseParentEvent()"
+              @move-focus="moveFocusRecursive($event)"
             ></tab-groups>
           </template>
         </ul>

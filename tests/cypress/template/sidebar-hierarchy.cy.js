@@ -194,7 +194,7 @@ describe('Hierarchy', () => {
     // Press right arrow key and check that focus is moved to first child
     cy.press(Cypress.Keyboard.Keys.RIGHT)
     cy.get('#hierarchy-list .list-group-item a').eq(1).should('have.focus')
-    // PRess right arrow key again and check that nothing happens
+    // Press right arrow key again and check that nothing happens
     cy.press(Cypress.Keyboard.Keys.RIGHT)
     cy.get('#hierarchy-list .list-group-item a').eq(1).should('have.focus')
     // Press down arrow key and check that focus is moved
