@@ -60,6 +60,24 @@ window.SKOSMOS = {
 <!-- Bootstrap -->
 <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
 
+<!-- FormatJS Intl.Collator polyfill for expanded locale support -->
+<script type="importmap">
+  {
+    "imports": {
+      "@formatjs/intl-localematcher": "./node_modules/@formatjs/intl-localematcher/index.js",
+      "@formatjs/fast-memoize": "./node_modules/@formatjs/fast-memoize/index.js"
+    }
+  }
+</script>
+<script type="module">
+  import './node_modules/@formatjs/intl-collator/polyfill-force.js';
+  console.log('Intl.Collator polyfill loaded');
+
+  // custom event to signal that the polyfill has been loaded
+  const event = new Event('loadIntlCollator')
+  document.dispatchEvent(event)
+</script>
+
 <!-- Vue.js -->
 {% if GlobalConfig.uiDevMode %}
 <script src="node_modules/vue/dist/vue.global.js"></script>
