@@ -284,8 +284,8 @@ function startHierarchyApp () {
           for (const node of nodes) {
             // Assign index only if parent is open
             if (parentIsOpen) {
-              counter++
               node.index = counter
+              counter++
             } else {
               delete node.index
             }
