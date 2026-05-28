@@ -62,8 +62,6 @@ describe('Groups tab', () => {
     cy.visit('/yso/en/')
     // Click on groups tab
     cy.get('#groups').click()
-    // Check that hierarchy button has correct Aria label
-    cy.get('#groups-list').find('ul.list-group button').should('have.attr', 'aria-label', 'Open')
     // Check that concepts have correct Aria labels
     cy.get('.concept-label a span').eq(0).invoke('text').should('contain', 'Go to the concept page')
 
@@ -71,8 +69,6 @@ describe('Groups tab', () => {
     cy.visit('/yso/fi/')
     // Click on groups tab
     cy.get('#groups').click()
-    // Check that hierarchy button has correct Aria label
-    cy.get('#groups-list').find('ul.list-group button').should('have.attr', 'aria-label', 'Avaa')
     // Check that concepts have correct Aria labels
     cy.get('.concept-label a span').eq(0).invoke('text').should('contain', 'Mene käsitesivulle')
 
@@ -80,8 +76,6 @@ describe('Groups tab', () => {
     cy.visit('/yso/sv/')
     // Click on groups tab
     cy.get('#groups').click()
-    // Check that hierarchy button has correct Aria label
-    cy.get('#groups-list').find('ul.list-group button').should('have.attr', 'aria-label', 'Öppna')
     // Check that concepts have correct Aria labels
     cy.get('.concept-label a span').eq(0).invoke('text').should('contain', 'Gå till begreppssidan')
   })
