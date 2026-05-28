@@ -9,13 +9,11 @@ function startHierarchyApp () {
         loadingHierarchy: true,
         loadingChildren: [],
         selectedConcept: '',
-        listStyle: {}
+        listStyle: {},
+        visibleConceptCount: 0
       }
     },
     computed: {
-      openAriaMessage () {
-        return $t('Open')
-      },
       toConceptPageAriaMessage () {
         return $t('Go to the concept page')
       }
@@ -69,6 +67,7 @@ function startHierarchyApp () {
                 this.hierarchy.push({ uri: c.uri, label: c.title || c.label, hasChildren: true, children: [], isOpen: false, notation: undefined, isScheme: true })
               }
 
+              this.addIndicesToHierarchy()
               this.loadingHierarchy = false
             })
         } else {
@@ -85,6 +84,7 @@ function startHierarchyApp () {
                 this.hierarchy.push(this.createConceptNode(c))
               }
 
+              this.addIndicesToHierarchy()
               this.loadingHierarchy = false
             })
         }
@@ -107,6 +107,7 @@ function startHierarchyApp () {
         }
 
         this.loadingHierarchy = false
+        this.addIndicesToHierarchy()
         this.selectedConcept = window.SKOSMOS.uri
       },
       loadChildren (concept) {
@@ -127,6 +128,7 @@ function startHierarchyApp () {
                 for (const c of data.topconcepts.sort((a, b) => this.compareConcepts(a, b))) {
                   concept.children.push(this.createConceptNode(c))
                 }
+                this.addIndicesToHierarchy()
                 this.loadingChildren = this.loadingChildren.filter(x => x !== concept)
               })
           } else {
@@ -143,9 +145,13 @@ function startHierarchyApp () {
                 for (const c of data.narrower.sort((a, b) => this.compareConcepts(a, b))) {
                   concept.children.push(this.createConceptNode(c))
                 }
+                this.addIndicesToHierarchy()
                 this.loadingChildren = this.loadingChildren.filter(x => x !== concept)
               })
           }
+        } else if (concept.children.length > 0) {
+          // If the concept already has children loaded, update indices in hierarchy
+          this.addIndicesToHierarchy()
         }
       },
       async loadConceptSchemes () {
@@ -270,6 +276,25 @@ function startHierarchyApp () {
           }
         }
       },
+      addIndicesToHierarchy () {
+        // Adds a unique index to each concept that is visible in DOM after hierarchy is updated
+        let counter = 0
+
+        const traverse = (nodes, parentIsOpen) => {
+          for (const node of nodes) {
+            // Assign index only if parent is open
+            parentIsOpen ? node.index = counter++ : delete node.index
+
+            if (node.children.length > 0) {
+              traverse(node.children, node.isOpen && parentIsOpen)
+            }
+          }
+        }
+
+        traverse(this.hierarchy, true)
+
+        this.visibleConceptCount = counter
+      },
       openContainingScheme () {
         const containsConcept = (node) => {
           if (node.uri === window.SKOSMOS.uri) return true
@@ -345,14 +370,14 @@ function startHierarchyApp () {
     },
     template: `
       <div v-click-tab-hierarchy="handleClickHierarchyEvent" v-click-collapse-btn="setListStyle" v-resize-window="setListStyle">
-        <div id="hierarchy-list" class="sidebar-list p-0" :style="listStyle">
-          <ul class="list-group" v-if="!loadingHierarchy">
+        <div id="hierarchy-list" class="sidebar-list p-0" tabindex="-1" :style="listStyle">
+          <ul class="list-group" aria-labelledby="hierarchy" role="tree" v-if="!loadingHierarchy">
             <tab-hier-wrapper
               :hierarchy="hierarchy"
               :selectedConcept="selectedConcept"
               :loadingChildren="loadingChildren"
-              :openAriaMessage="openAriaMessage"
               :toConceptPageAriaMessage="toConceptPageAriaMessage"
+              :visibleConceptCount="visibleConceptCount"
               @load-children="loadChildren($event)"
               @select-concept="selectedConcept = $event"
             ></tab-hier-wrapper>
@@ -405,8 +430,13 @@ function startHierarchyApp () {
   })
 
   tabHierApp.component('tab-hier-wrapper', {
-    props: ['hierarchy', 'selectedConcept', 'loadingChildren', 'openAriaMessage', 'toConceptPageAriaMessage'],
+    props: ['hierarchy', 'selectedConcept', 'loadingChildren', 'toConceptPageAriaMessage', 'visibleConceptCount'],
     emits: ['loadChildren', 'selectConcept'],
+    data () {
+      return {
+        conceptInFocus: 0
+      }
+    },
     mounted () {
       // scroll automatically to selected concept after the whole hierarchy tree has been mounted
       if (this.selectedConcept) {
@@ -434,6 +464,33 @@ function startHierarchyApp () {
       },
       selectConcept (concept) {
         this.$emit('selectConcept', concept)
+      },
+      handleKeydownEvent (e) {
+        if (e.key === ' ') {
+          // Click on link currently in focus
+          e.preventDefault()
+          document.getElementById('hierarchy-concept' + this.conceptInFocus).click()
+        } else if (e.key === 'ArrowDown') {
+          // On last element move focus to first list item, otherwise next list item
+          e.preventDefault()
+          this.moveFocus((this.conceptInFocus + 1) % this.visibleConceptCount)
+        } else if (e.key === 'ArrowUp') {
+          // On first element move focus to last list item, otherwise to previous list item
+          e.preventDefault()
+          this.moveFocus(this.conceptInFocus === 0 ? this.visibleConceptCount - 1 : this.conceptInFocus - 1)
+        } else if (e.key === 'Home') {
+          // Move focus to first list item
+          e.preventDefault()
+          this.moveFocus(0)
+        } else if (e.key === 'End') {
+          // Move focus to last list item
+          e.preventDefault()
+          this.moveFocus(this.visibleConceptCount - 1)
+        }
+      },
+      moveFocus (i) {
+        this.conceptInFocus = i
+        document.getElementById('hierarchy-concept' + this.conceptInFocus).focus()
       }
     },
     template: `
@@ -444,40 +501,86 @@ function startHierarchyApp () {
           :isTopConcept="true"
           :isLast="i == hierarchy.length - 1"
           :loadingChildren="loadingChildren"
-          :openAriaMessage="openAriaMessage"
           :toConceptPageAriaMessage="toConceptPageAriaMessage"
+          :conceptInFocus="conceptInFocus"
           @load-children="loadChildren($event)"
           @select-concept="selectConcept($event)"
+          @link-keydown="handleKeydownEvent($event)"
+          @move-focus="moveFocus($event)"
         ></tab-hier>
       </template>
     `
   })
 
   tabHierApp.component('tab-hier', {
-    props: ['concept', 'selectedConcept', 'isTopConcept', 'isLast', 'loadingChildren', 'openAriaMessage', 'toConceptPageAriaMessage'],
-    emits: ['loadChildren', 'selectConcept'],
+    props: [
+      'concept',
+      'selectedConcept',
+      'isTopConcept',
+      'isLast',
+      'loadingChildren',
+      'toConceptPageAriaMessage',
+      'conceptInFocus'
+    ],
+    emits: ['loadChildren', 'selectConcept', 'linkKeydown', 'closeParent', 'moveFocus'],
     inject: ['partialPageLoad', 'getConceptURL', 'showNotation'],
     methods: {
       handleClickOpenEvent (concept) {
         concept.isOpen = !concept.isOpen
         this.$emit('loadChildren', concept)
+        this.$emit('moveFocus', concept.index)
       },
       handleClickConceptEvent (event, concept) {
         concept.isOpen = true
         this.$emit('loadChildren', concept)
         this.$emit('selectConcept', concept.uri)
+        this.$emit('moveFocus', concept.index)
         this.partialPageLoad(event, this.getConceptURL(concept.uri))
+      },
+      handleKeydownEvent (e, c) {
+        if (e.key === 'ArrowRight') {
+          if (!c.isOpen && c.hasChildren) {
+            // If right arrow key is pressed on a closed concept, open it
+            c.isOpen = true
+            this.$emit('loadChildren', c)
+          } else if (c.hasChildren) {
+            // If right arrow is pressed on a open concept, move focus to first child
+            this.$emit('moveFocus', c.index + 1)
+          }
+        } else if (e.key === 'ArrowLeft' && c.isOpen) {
+          // If left arrow key is pressed on an open concept, close it
+          c.isOpen = false
+          this.$emit('loadChildren', c)
+        } else if (e.key === 'ArrowLeft') {
+          // If left arrow key is pressed on a closed concept, close its parent
+          this.$emit('closeParent')
+        } else {
+          // Otherwise, deal with other key press types in tab-hier-wrapper
+          this.$emit('linkKeydown', e)
+        }
+      },
+      handleCloseParentEvent () {
+        // Close this concept when left arrow key is pressed on a closed child
+        this.concept.isOpen = false
+        this.$emit('loadChildren', this.concept)
+        this.$emit('moveFocus', this.concept.index)
       },
       loadChildrenRecursive (concept) {
         this.$emit('loadChildren', concept)
       },
       selectConceptRecursive (concept) {
         this.$emit('selectConcept', concept)
+      },
+      linkKeydownRecursive (event) {
+        this.$emit('linkKeydown', event)
+      },
+      moveFocusRecursive (index) {
+        this.$emit('moveFocus', index)
       }
     },
     template: `
       <li class="list-group-item p-0" :class="{ 'top-concept': isTopConcept }">
-        <button type="button" class="hierarchy-button btn btn-primary" :aria-label="openAriaMessage" 
+        <button type="button" class="hierarchy-button btn btn-primary" aria-hidden="true" tabindex="-1"
           :class="{ 'open': concept.isOpen }"
           v-if="concept.hasChildren"
           @click="handleClickOpenEvent(concept)"
@@ -491,27 +594,36 @@ function startHierarchyApp () {
           </template>
         </button>
         <span class="concept-label" :class="{ 'last': isLast }">
-          <a :class="{ 'selected': selectedConcept === concept.uri }"
+          <a role="treeitem"
+            :class="{ 'selected': selectedConcept === concept.uri }" 
             :href="getConceptURL(concept.uri)"
+            :tabindex="concept.index === conceptInFocus ? 0 : -1"
+            :id="'hierarchy-concept' + concept.index"
+            :aria-expanded="concept.hasChildren ? concept.isOpen : null"
+            :aria-selected="concept.uri === selectedConcept"
             @click="handleClickConceptEvent($event, concept)"
+            @keydown="handleKeydownEvent($event, concept)"
           >
             <span v-if="showNotation && concept.notation" class="concept-notation">{{ concept.notation }} </span>
             {{ concept.label }}
             <span class="visually-hidden">{{ toConceptPageAriaMessage }}</span>
           </a>
         </span>
-        <ul class="list-group ps-3" v-if="concept.children.length !== 0 && concept.isOpen">
+        <ul class="list-group ps-3" role="group" v-if="concept.children.length !== 0 && concept.isOpen">
           <template v-for="(c, i) in concept.children">
             <tab-hier
               :concept="c"
               :selectedConcept="selectedConcept"
-              :openAriaMessage="openAriaMessage"
               :toConceptPageAriaMessage="toConceptPageAriaMessage"
               :isTopConcept="false"
               :isLast="i == concept.children.length - 1"
               :loadingChildren="loadingChildren"
+              :conceptInFocus="conceptInFocus"
               @load-children="loadChildrenRecursive($event)"
               @select-concept="selectConceptRecursive($event)"
+              @link-keydown="linkKeydownRecursive($event)"
+              @close-parent="handleCloseParentEvent()"
+              @move-focus="moveFocusRecursive($event)"
             ></tab-hier>
           </template>
         </ul>

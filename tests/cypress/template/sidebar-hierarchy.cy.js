@@ -171,15 +171,41 @@ describe('Hierarchy', () => {
   it('Aria tags are correct for each language', () => {
     cy.visit('/test-hierarchy/fi/')
     cy.get('#hierarchy').should('not.have.class', 'disabled').click()
-    cy.get('#hierarchy-list').find('ul.list-group button').should('have.attr', 'aria-label', 'Avaa');
     cy.get('.concept-label a span').eq(0).invoke('text').should('contain', 'Mene käsitesivulle')
     cy.visit('/test-hierarchy/en/')
     cy.get('#hierarchy').should('not.have.class', 'disabled').click()
-    cy.get('#hierarchy-list').find('ul.list-group button').should('have.attr', 'aria-label', 'Open');
     cy.get('.concept-label a span').eq(0).invoke('text').should('contain', 'Go to the concept page')
     cy.visit('/test-hierarchy/sv/')
     cy.get('#hierarchy').should('not.have.class', 'disabled').click()
-    cy.get('#hierarchy-list').find('ul.list-group button').should('have.attr', 'aria-label', 'Öppna');
     cy.get('.concept-label a span').eq(0).invoke('text').should('contain', 'Gå till begreppssidan')
+  })
+  it('Keyboard navigation', () => {
+    // Go to test vocab home page
+    cy.visit('/test-hierarchy/en/')
+    // Click on hierarchy tab and wait for the concept tree to load
+    cy.get('#hierarchy').click()
+    cy.get('#hierarchy-list .list-group-item a')
+    // Press tab key and check that first list item has focus
+    cy.press(Cypress.Keyboard.Keys.TAB)
+    cy.get('#hierarchy-list .list-group-item a').eq(0).should('have.focus')
+    // Press right arrow key and check that children are loaded
+    cy.press(Cypress.Keyboard.Keys.RIGHT)
+    cy.get('#hierarchy-list li ul').first().children().should('have.length', 9)
+    // Press right arrow key and check that focus is moved to first child
+    cy.press(Cypress.Keyboard.Keys.RIGHT)
+    cy.get('#hierarchy-list .list-group-item a').eq(1).should('have.focus')
+    // PRess right arrow key again and check that nothing happens
+    cy.press(Cypress.Keyboard.Keys.RIGHT)
+    cy.get('#hierarchy-list .list-group-item a').eq(1).should('have.focus')
+    // Press down arrow key and check that focus is moved
+    cy.press(Cypress.Keyboard.Keys.DOWN)
+    cy.get('#hierarchy-list .list-group-item a').eq(2).should('have.focus')
+    // Press down up key and check that focus is moved
+    cy.press(Cypress.Keyboard.Keys.UP)
+    cy.get('#hierarchy-list .list-group-item a').eq(1).should('have.focus')
+    // Press left arrow key and check that children are closed and focus is moved
+    cy.press(Cypress.Keyboard.Keys.LEFT)
+    cy.get('#hierarchy-list .list-group-item').eq(0).find('ul').should('not.exist')
+    cy.get('#hierarchy-list .list-group-item a').eq(0).should('have.focus')
   })
 })
