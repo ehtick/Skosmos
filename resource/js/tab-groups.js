@@ -182,7 +182,7 @@ function startGroupsApp () {
               this.loadingChildren = this.loadingChildren.filter(x => x !== group)
             })
         } else if (group.childGroups.length > 0) {
-          // If the cgroup already has children loaded, update indices in groups
+          // If the group already has children loaded, update indices in groups
           this.addIndicesToGroups()
         }
       },
