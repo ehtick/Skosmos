@@ -193,7 +193,12 @@ function startGroupsApp () {
         const traverse = (nodes, parentIsOpen) => {
           for (const node of nodes) {
             // Assign index only if parent is open
-            parentIsOpen ? node.index = counter++ : delete node.index
+            if (parentIsOpen) {
+              counter++
+              node.index = counter
+            } else {
+              delete node.index
+            }
 
             if (node.childGroups.length > 0) {
               traverse(node.childGroups, node.isOpen && parentIsOpen)

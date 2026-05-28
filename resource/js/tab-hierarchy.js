@@ -283,7 +283,12 @@ function startHierarchyApp () {
         const traverse = (nodes, parentIsOpen) => {
           for (const node of nodes) {
             // Assign index only if parent is open
-            parentIsOpen ? node.index = counter++ : delete node.index
+            if (parentIsOpen) {
+              counter++
+              node.index = counter
+            } else {
+              delete node.index
+            }
 
             if (node.children.length > 0) {
               traverse(node.children, node.isOpen && parentIsOpen)
