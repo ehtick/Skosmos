@@ -207,5 +207,8 @@ describe('Hierarchy', () => {
     cy.press(Cypress.Keyboard.Keys.LEFT)
     cy.get('#hierarchy-list .list-group-item').eq(0).find('ul').should('not.exist')
     cy.get('#hierarchy-list .list-group-item a').eq(0).should('have.focus')
+    // Check that pressing space opens concept page
+    cy.press(Cypress.Keyboard.Keys.SPACE)
+    cy.get('#concept-heading h1', {'timeout': 15000}).invoke('text').should('equal', 'Birds')
   })
 })
