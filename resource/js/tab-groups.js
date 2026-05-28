@@ -204,7 +204,7 @@ function startGroupsApp () {
         traverse(this.groups, true)
 
         this.visibleConceptCount = counter
-      },
+      }
     },
     template: `
       <div v-click-tab-groups="handleClickGroupsEvent" v-click-collapse-btn="setListStyle" v-resize-window="setListStyle">
