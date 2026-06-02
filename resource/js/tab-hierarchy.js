@@ -514,7 +514,6 @@ function startHierarchyApp () {
 
   if (document.getElementById('tab-hierarchy')) {
     // initialize the collators needed by the app
-    console.log('initializing hierarchy collators')
     tabHierApp.config.globalProperties.$collator = new Intl.Collator(
       window.SKOSMOS.content_lang || window.SKOSMOS.lang,
       {
@@ -534,9 +533,9 @@ function startHierarchyApp () {
   }
 }
 
-function startHierarchyAppWaitForCollator () {
-  console.log('waiting for collator')
-  document.addEventListener('loadIntlCollator', startHierarchyApp)
+async function startHierarchyAppWaitForCollator () {
+  await window.intlCollatorReady
+  startHierarchyApp()
 }
 
 onTranslationReady(startHierarchyAppWaitForCollator)

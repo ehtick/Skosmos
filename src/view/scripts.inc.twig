@@ -70,12 +70,23 @@ window.SKOSMOS = {
   }
 </script>
 <script type="module">
-  import './node_modules/@formatjs/intl-collator/polyfill-force.js';
-  console.log('Intl.Collator polyfill loaded');
+  function needsCollatorPolyfill(locale) {
+    try {
+      const supported = Intl.Collator.supportedLocalesOf([locale])
+      return supported.length === 0
+    } catch {
+      return true; // fallback for old browsers
+    }
+  }
 
-  // custom event to signal that the polyfill has been loaded
-  const event = new Event('loadIntlCollator')
-  document.dispatchEvent(event)
+  async function ensureCollator(locale) {
+    if (needsCollatorPolyfill(locale)) {
+      await import('./node_modules/@formatjs/intl-collator/polyfill-force.js')
+    }
+  }
+
+  // global Promise for loading the polyfill on-demand
+  window.intlCollatorReady = ensureCollator(window.SKOSMOS.content_lang || window.SKOSMOS.lang)
 </script>
 
 <!-- Vue.js -->
