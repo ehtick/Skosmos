@@ -1,7 +1,7 @@
 /* global Vue, $t, onTranslationReady */
 /* global partialPageLoad, getConceptURL */
 
-function startHierarchyApp () {
+async function startHierarchyApp () {
   const tabHierApp = Vue.createApp({
     data () {
       return {
@@ -513,6 +513,8 @@ function startHierarchyApp () {
   })
 
   if (document.getElementById('tab-hierarchy')) {
+    await window.intlCollatorReady
+
     // initialize the collators needed by the app
     tabHierApp.config.globalProperties.$collator = new Intl.Collator(
       window.SKOSMOS.content_lang || window.SKOSMOS.lang,
@@ -533,9 +535,4 @@ function startHierarchyApp () {
   }
 }
 
-async function startHierarchyAppWaitForCollator () {
-  await window.intlCollatorReady
-  startHierarchyApp()
-}
-
-onTranslationReady(startHierarchyAppWaitForCollator)
+onTranslationReady(startHierarchyApp)
