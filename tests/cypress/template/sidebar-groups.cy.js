@@ -62,8 +62,6 @@ describe('Groups tab', () => {
     cy.visit('/yso/en/')
     // Click on groups tab
     cy.get('#groups').click()
-    // Check that hierarchy button has correct Aria label
-    cy.get('#groups-list').find('ul.list-group button').should('have.attr', 'aria-label', 'Open')
     // Check that concepts have correct Aria labels
     cy.get('.concept-label a span').eq(0).invoke('text').should('contain', 'Go to the concept page')
 
@@ -71,8 +69,6 @@ describe('Groups tab', () => {
     cy.visit('/yso/fi/')
     // Click on groups tab
     cy.get('#groups').click()
-    // Check that hierarchy button has correct Aria label
-    cy.get('#groups-list').find('ul.list-group button').should('have.attr', 'aria-label', 'Avaa')
     // Check that concepts have correct Aria labels
     cy.get('.concept-label a span').eq(0).invoke('text').should('contain', 'Mene käsitesivulle')
 
@@ -80,10 +76,39 @@ describe('Groups tab', () => {
     cy.visit('/yso/sv/')
     // Click on groups tab
     cy.get('#groups').click()
-    // Check that hierarchy button has correct Aria label
-    cy.get('#groups-list').find('ul.list-group button').should('have.attr', 'aria-label', 'Öppna')
     // Check that concepts have correct Aria labels
     cy.get('.concept-label a span').eq(0).invoke('text').should('contain', 'Gå till begreppssidan')
-
+  })
+  it('Keyboard navigation', () => {
+    // Go to test vocab home page
+    cy.visit('/groups/en/')
+    // Click on groups tab and wait for the group tree to load
+    cy.get('#groups').click()
+    cy.get('#groups-list .list-group-item a')
+    // Press tab key and check that first list item has focus
+    cy.press(Cypress.Keyboard.Keys.TAB)
+    cy.get('#groups-list .list-group-item a').eq(0).should('have.focus')
+    // Press down arrow key and check that focus is moved
+    cy.press(Cypress.Keyboard.Keys.DOWN)
+    cy.get('#groups-list .list-group-item a').eq(1).should('have.focus')
+    // Press right arrow key and check that children are loaded
+    cy.press(Cypress.Keyboard.Keys.RIGHT)
+    cy.get('#groups-list li ul').eq(0).children().should('have.length', 1)
+    // Press right arrow key and check that focus is moved to first child
+    cy.press(Cypress.Keyboard.Keys.RIGHT)
+    cy.get('#groups-list .list-group-item a').eq(2).should('have.focus')
+    // Press right arrow key again and check that nothing happens
+    cy.press(Cypress.Keyboard.Keys.RIGHT)
+    cy.get('#groups-list .list-group-item a').eq(2).should('have.focus')
+    // Press left arrow key and check that children are closed and focus is moved
+    cy.press(Cypress.Keyboard.Keys.LEFT)
+    cy.get('#groups-list .list-group-item').eq(1).find('ul').should('not.exist')
+    cy.get('#groups-list .list-group-item a').eq(1).should('have.focus')
+    // Press down up key and check that focus is moved
+    cy.press(Cypress.Keyboard.Keys.UP)
+    cy.get('#groups-list .list-group-item a').eq(0).should('have.focus')
+    // Check that pressing space opens concept page
+    cy.press(Cypress.Keyboard.Keys.SPACE)
+    cy.get('#concept-heading h1', {'timeout': 15000}).invoke('text').should('equal', 'Fish')
   })
 })
