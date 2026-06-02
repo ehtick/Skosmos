@@ -513,7 +513,11 @@ async function startHierarchyApp () {
   })
 
   if (document.getElementById('tab-hierarchy')) {
-    await window.getIntlCollatorReady()
+    try {
+      await window.getIntlCollatorReady()
+    } catch (e) {
+      console.error('Intl.Collator polyfill failed to load, continuing with native collator:', e)
+    }
 
     // initialize the collators needed by the app
     tabHierApp.config.globalProperties.$collator = new Intl.Collator(
