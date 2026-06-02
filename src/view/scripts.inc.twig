@@ -86,7 +86,15 @@ window.SKOSMOS = {
   }
 
   // global Promise for loading the polyfill on-demand
-  window.intlCollatorReady = ensureCollator(window.SKOSMOS.content_lang || window.SKOSMOS.lang)
+  let collatorPromise = null
+
+  window.getIntlCollatorReady = function () {
+    if (!collatorPromise) {
+      const locale = window.SKOSMOS.content_lang || window.SKOSMOS.lang
+      collatorPromise = ensureCollator(locale)
+    }
+    return collatorPromise
+  }
 </script>
 
 <!-- Vue.js -->

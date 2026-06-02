@@ -513,7 +513,7 @@ async function startHierarchyApp () {
   })
 
   if (document.getElementById('tab-hierarchy')) {
-    await window.intlCollatorReady
+    await window.getIntlCollatorReady()
 
     // initialize the collators needed by the app
     tabHierApp.config.globalProperties.$collator = new Intl.Collator(
