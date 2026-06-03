@@ -60,6 +60,47 @@ window.SKOSMOS = {
 <!-- Bootstrap -->
 <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
 
+<!-- FormatJS Intl.Collator polyfill for expanded locale support -->
+<script type="importmap">
+  {
+    "imports": {
+      "@formatjs/intl-localematcher": "./node_modules/@formatjs/intl-localematcher/index.js",
+      "@formatjs/fast-memoize": "./node_modules/@formatjs/fast-memoize/index.js"
+    }
+  }
+</script>
+<script type="module">
+  function needsCollatorPolyfill(locale) {
+    try {
+      const supported = Intl.Collator.supportedLocalesOf([locale])
+      return supported.length === 0
+    } catch {
+      return true; // fallback for old browsers
+    }
+  }
+
+  async function ensureCollator(locale) {
+    if (needsCollatorPolyfill(locale)) {
+      await import('./node_modules/@formatjs/intl-collator/polyfill-force.js')
+    }
+  }
+
+  // global Promise for loading the polyfill on-demand
+  let collatorPromise = null
+
+  window.getIntlCollatorReady = function () {
+    if (!collatorPromise) {
+      const locale = window.SKOSMOS.content_lang || window.SKOSMOS.lang
+      collatorPromise = ensureCollator(locale)
+    }
+    return collatorPromise
+  }
+
+  // custom event to signal that the collator promise has been initialized
+  const event = new Event('intlCollatorPromiseReady')
+  document.dispatchEvent(event)
+</script>
+
 <!-- Vue.js -->
 {% if GlobalConfig.uiDevMode %}
 <script src="node_modules/vue/dist/vue.global.js"></script>

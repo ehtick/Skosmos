@@ -357,19 +357,12 @@ function startHierarchyApp () {
         strA = strA || a.label || a.prefLabel || a.title || ''
         strB = strB || b.label || b.prefLabel || b.title || ''
 
-        // Set language and options
-        const lang = window.SKOSMOS.content_lang || window.SKOSMOS.lang
-        const options = {
-          numeric: window.SKOSMOS.sortByNotation === 'natural', // Set numeric to true if sort should be natural
-          sensitivity: 'variant' // Strings that differ in base letters, diacritic marks, or case compare as unequal
-        }
-
-        const result = strA.localeCompare(strB, lang, options)
+        const result = this.$collator.compare(strA, strB)
         if (result !== 0) {
           return result
         } else {
           // fall back to non-numeric sort to ensure a consistent order
-          return strA.localeCompare(strB, lang, { sensitivity: 'variant' })
+          return this.$fallbackCollator.compare(strA, strB)
         }
       }
     },
@@ -636,9 +629,42 @@ function startHierarchyApp () {
     `
   })
 
-  if (document.getElementById('tab-hierarchy')) {
-    tabHierApp.mount('#tab-hierarchy')
-  }
+  // initialize the collators needed by the app
+  tabHierApp.config.globalProperties.$collator = new Intl.Collator(
+    window.SKOSMOS.content_lang || window.SKOSMOS.lang,
+    {
+      sensitivity: 'variant',
+      numeric: window.SKOSMOS.sortByNotation === 'natural'
+    }
+  )
+  tabHierApp.config.globalProperties.$fallbackCollator = new Intl.Collator(
+    window.SKOSMOS.content_lang || window.SKOSMOS.lang,
+    {
+      sensitivity: 'variant',
+      numeric: false
+    }
+  )
+
+  tabHierApp.mount('#tab-hierarchy')
 }
 
-onTranslationReady(startHierarchyApp)
+async function initializeHierarchyApp () {
+  try {
+    await window.getIntlCollatorReady()
+  } catch (e) {
+    console.error('Intl.Collator polyfill failed to load, continuing with native collator:', e)
+  }
+
+  startHierarchyApp()
+}
+
+onTranslationReady(function () {
+  if (document.getElementById('tab-hierarchy')) {
+    if (typeof window.getIntlCollatorReady === 'function') {
+      initializeHierarchyApp()
+    } else {
+      // wait for the polyfill promise to be initialized
+      document.addEventListener('intlCollatorPromiseReady', initializeHierarchyApp)
+    }
+  }
+})
