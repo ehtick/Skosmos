@@ -543,11 +543,11 @@ async function initializeHierarchyApp () {
 
 onTranslationReady(function () {
   if (document.getElementById('tab-hierarchy')) {
-    if (typeof window.getIntlCollatorReady !== 'function') {
+    if (typeof window.getIntlCollatorReady === 'function') {
+      initializeHierarchyApp()
+    } else {
       // wait for the polyfill promise to be initialized
       document.addEventListener('intlCollatorPromiseReady', initializeHierarchyApp)
-    } else {
-      initializeHierarchyApp()
     }
   }
 })
