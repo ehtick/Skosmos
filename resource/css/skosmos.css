@@ -1094,6 +1094,7 @@ h1#vocab-heading {
 #concept-deprecated-alert {
   padding-left: 2.5rem;
   padding-right: 2.5rem;
+  margin-bottom: 0;
 }
 
 #concept-deprecated-alert i {
