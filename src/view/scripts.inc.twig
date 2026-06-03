@@ -95,6 +95,11 @@ window.SKOSMOS = {
     }
     return collatorPromise
   }
+
+  // custom event to signal that the collator promise has been initialized
+  const event = new Event('intlCollatorPromiseReady')
+  document.dispatchEvent(event)
+
 </script>
 
 <!-- Vue.js -->

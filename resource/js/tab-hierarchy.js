@@ -1,7 +1,7 @@
 /* global Vue, $t, onTranslationReady */
 /* global partialPageLoad, getConceptURL */
 
-async function startHierarchyApp () {
+function startHierarchyApp () {
   const tabHierApp = Vue.createApp({
     data () {
       return {
@@ -512,31 +512,42 @@ async function startHierarchyApp () {
     `
   })
 
-  if (document.getElementById('tab-hierarchy')) {
-    try {
-      await window.getIntlCollatorReady()
-    } catch (e) {
-      console.error('Intl.Collator polyfill failed to load, continuing with native collator:', e)
+  // initialize the collators needed by the app
+  tabHierApp.config.globalProperties.$collator = new Intl.Collator(
+    window.SKOSMOS.content_lang || window.SKOSMOS.lang,
+    {
+      sensitivity: 'variant',
+      numeric: window.SKOSMOS.sortByNotation === 'natural'
     }
+  )
+  tabHierApp.config.globalProperties.$fallbackCollator = new Intl.Collator(
+    window.SKOSMOS.content_lang || window.SKOSMOS.lang,
+    {
+      sensitivity: 'variant',
+      numeric: false
+    }
+  )
 
-    // initialize the collators needed by the app
-    tabHierApp.config.globalProperties.$collator = new Intl.Collator(
-      window.SKOSMOS.content_lang || window.SKOSMOS.lang,
-      {
-        sensitivity: 'variant',
-        numeric: window.SKOSMOS.sortByNotation === 'natural'
-      }
-    )
-    tabHierApp.config.globalProperties.$fallbackCollator = new Intl.Collator(
-      window.SKOSMOS.content_lang || window.SKOSMOS.lang,
-      {
-        sensitivity: 'variant',
-        numeric: false
-      }
-    )
-
-    tabHierApp.mount('#tab-hierarchy')
-  }
+  tabHierApp.mount('#tab-hierarchy')
 }
 
-onTranslationReady(startHierarchyApp)
+async function initializeHierarchyApp () {
+  try {
+    await window.getIntlCollatorReady()
+  } catch (e) {
+    console.error('Intl.Collator polyfill failed to load, continuing with native collator:', e)
+  }
+
+  startHierarchyApp()
+}
+
+onTranslationReady(function () {
+  if (document.getElementById('tab-hierarchy')) {
+    if (typeof window.getIntlCollatorReady !== 'function') {
+      // wait for the polyfill promise to be initialized
+      document.addEventListener('intlCollatorPromiseReady', initializeHierarchyApp)
+    } else {
+      initializeHierarchyApp()
+    }
+  }
+})
