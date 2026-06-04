@@ -7,6 +7,7 @@
   --secondary-light-color: #f2f5f7;
   --alert-color: #a0270a;
   --white-color: #ffffff;
+  --focus-color: #0d2fc4;
 
   --body-text: var(--dark-color);
 
@@ -97,6 +98,12 @@ body {
   font-size: var(--font-size);
 }
 
+:focus-visible {
+  outline: 3px solid var(--focus-color) !important;
+  outline-offset: 3px !important;
+  box-shadow: none !important;
+}
+
 /* Font awesome
 ====================================== */
 
@@ -147,6 +154,14 @@ header .container-fluid .row {
 #topbar {
   color: var(--topbar-text-2);
   background-color: var(--topbar-bg-2);
+}
+
+.frontpage-logo #topbar :focus-visible {
+  outline-color: var(--topbar-text-1) !important;
+}
+
+#topbar :focus-visible {
+  outline-color: var(--topbar-text-2) !important;
 }
 
 .frontpage-logo #topbar-nav .nav-item a {
@@ -285,6 +300,10 @@ header .container-fluid .row {
   color: var(--search-dropdown-hover-text);
 }
 
+#search-wrapper .dropdown-menu li:focus-visible {
+  outline-offset: -3px !important;
+}
+
 #search-wrapper .dropdown-toggle {
   color: var(--headerbar-text);
   background-color: var(--search-field-bg);
@@ -335,9 +354,9 @@ header .container-fluid .row {
   border-radius: 0;
 }
 
-#search-field:focus {
-  border-color: var(--search-border);
-  box-shadow: inset 0 0 5px rgba(196, 205, 217, 1);
+#search-field:focus-visible {
+  position: relative;
+  z-index: 1001;
 }
 
 #clear-button {
@@ -497,12 +516,12 @@ header .container-fluid .row {
 /* Show a visible focus ring when focus is moved with keyboard navigation */
 
 #search-wrapper #vocab-list .vocab-select:focus-within {
-  outline: 2px solid var(--search-keyboard-nav-border);
-  outline-offset: 2px;
+  outline: 3px solid var(--focus-color);
+  outline-offset: 3px;
 }
 
 #search-wrapper #language-list .dropdown-item:focus-within {
-  outline: 2px solid var(--search-keyboard-nav-border);
+  outline: 3px solid var(--focus-color);
    outline-offset: -3px;
 }
 
@@ -610,6 +629,10 @@ header .container-fluid .row {
   background-color: var(--landing-vocabulary-list-bg);
 }
 
+#vocabulary-list a:focus-visible {
+  text-decoration: none !important;
+}
+
 #vocabulary-list h2 {
   color: var(--landing-vocabulary-list-heading);
 }
@@ -683,6 +706,11 @@ header .container-fluid .row {
 #sidebar-tabs {
   position: relative;
   background-color: var(--sidebar-tab-inactive-bg);
+}
+
+#sidebar-tabs :focus-visible {
+  z-index: 1000;
+  position: relative;
 }
 
 #sidebar .nav-link {
@@ -817,6 +845,10 @@ header .container-fluid .row {
   font-weight: bold;
 }
 
+#sidebar .sidebar-list :focus-visible {
+  outline-offset: 0 !important;
+}
+
 /* --- Sidebar alphabetical tab --- */
 
 #alphabetical .nav-link {
@@ -852,9 +884,9 @@ header .container-fluid .row {
   text-decoration: underline;
 }
 
-.form-check-input:focus + .form-check-label {
-  outline: 2px dotted white;
-  outline-offset: -2px;
+.form-check-input:focus-visible + .form-check-label {
+  outline: 3px solid var(--sidebar-tab-active-text);
+  outline-offset: -3px;
 }
 
 #sidebar .form-check-label.wide {
@@ -1171,9 +1203,12 @@ h1#vocab-heading {
   bottom: 4px;
 }
 
-.copy-clipboard:focus {
-  border: 1px solid var(--main-content-text);
-  border-radius: 3px;
+.copy-clipboard {
+  border-radius: 0;
+}
+
+.copy-clipboard:focus-visible {
+  outline-offset: -3px !important;
 }
 
 /* Properties */
@@ -1279,7 +1314,7 @@ h1#vocab-heading {
   text-transform: none;
 }
 
-.tooltip-inline:focus {
+.tooltip-inline:focus-visible {
   z-index: 9002 !important;
 }
 
@@ -1326,10 +1361,9 @@ h1#vocab-heading {
   color: var(--tooltip-bg);
 }
 
-.tooltip-html button:focus {
-  border: 2px solid var(--main-content-text);
+.tooltip-html button:focus-visible {
+  outline-offset: -3px !important;
   border-radius: 0;
-  margin: -4px;
 }
 
 .tooltip-html:hover .tooltip-html-content, .tooltip-html:focus-within .tooltip-html-content {
@@ -1547,7 +1581,7 @@ h1#vocab-heading {
   background-image: none;
 }
 
-#feedback-form select:valid, #feedback-form select:valid:focus, #feedback-form input::placeholder {
+#feedback-form select:valid, #feedback-form select:valid:focus-visible, #feedback-form input::placeholder {
   color: var(--feedback-text);
 }
 
