@@ -182,10 +182,10 @@ function startAlphaApp () {
       el.clickTabEvent = event => {
         binding.value() // calling the method given as the attribute value (loadLetters)
       }
-      document.querySelector('#alphabetical').addEventListener('click', el.clickTabEvent) // registering an event listener on clicks on the alphabetical nav-item element
+      document.querySelector('#alphabetical').addEventListener('shown.bs.tab', el.clickTabEvent) // registering an event listener on bootstrap's tab shown event on the alphabetical nav-item element
     },
     unmounted: el => {
-      document.querySelector('#alphabetical').removeEventListener('click', el.clickTabEvent)
+      document.querySelector('#alphabetical').removeEventListener('shown.bs.tab', el.clickTabEvent)
     }
   })
 

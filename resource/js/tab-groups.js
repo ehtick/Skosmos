@@ -237,10 +237,10 @@ function startGroupsApp () {
       el.clickTabEvent = event => {
         binding.value() // calling the method given as the attribute value (handleClickGroupsEvent)
       }
-      document.querySelector('#groups').addEventListener('click', el.clickTabEvent) // registering an event listener on clicks on the groups nav-item element
+      document.querySelector('#groups').addEventListener('shown.bs.tab', el.clickTabEvent) // registering an event listener on bootstrap's tab shown event on the groups nav-item element
     },
     unmounted: el => {
-      document.querySelector('#groups').removeEventListener('click', el.clickTabEvent)
+      document.querySelector('#groups').removeEventListener('shown.bs.tab', el.clickTabEvent)
     }
   })
 

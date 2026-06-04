@@ -156,10 +156,10 @@ function startChangesApp () {
       el.clickTabEvent = event => {
         binding.value() // calling the method given as the attribute value (loadChanges)
       }
-      document.querySelector('#changes').addEventListener('click', el.clickTabEvent) // registering an event listener on clicks on the changes nav-item element
+      document.querySelector('#changes').addEventListener('shown.bs.tab', el.clickTabEvent) // registering an event listener on bootstrap's tab shown event on the changes nav-item element
     },
     unmounted: el => {
-      document.querySelector('#changes').removeEventListener('click', el.clickTabEvent)
+      document.querySelector('#changes').removeEventListener('shown.bs.tab', el.clickTabEvent)
     }
   })
 

@@ -394,10 +394,10 @@ function startHierarchyApp () {
       el.clickTabEvent = event => {
         binding.value() // calling the method given as the attribute value (handleClickHierarchyEvent)
       }
-      document.querySelector('#hierarchy').addEventListener('click', el.clickTabEvent) // registering an event listener on clicks on the hierarchy nav-item element
+      document.querySelector('#hierarchy').addEventListener('shown.bs.tab', el.clickTabEvent) // registering an event listener on bootstrap's tab shown event on the hierarchy nav-item element
     },
     unmounted: el => {
-      document.querySelector('#hierarchy').removeEventListener('click', el.clickTabEvent)
+      document.querySelector('#hierarchy').removeEventListener('shown.bs.tab', el.clickTabEvent)
     }
   })
 
