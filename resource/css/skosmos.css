@@ -520,11 +520,6 @@ header .container-fluid .row {
   outline-offset: 3px;
 }
 
-#search-wrapper #language-list .dropdown-item:focus-within {
-  outline: 3px solid var(--focus-color);
-  outline-offset: -3px;
-}
-
 /* Search field */
 
 #search-form {
@@ -629,10 +624,6 @@ header .container-fluid .row {
   background-color: var(--landing-vocabulary-list-bg);
 }
 
-#vocabulary-list a:focus-visible {
-  text-decoration: none !important;
-}
-
 #vocabulary-list h2 {
   color: var(--landing-vocabulary-list-heading);
 }
@@ -661,6 +652,10 @@ header .container-fluid .row {
   text-decoration-thickness: 1px;
   text-decoration-color: var(--landing-vocabulary-list-link-underline);
   text-underline-offset: 0.3rem;
+}
+
+#vocabulary-list .list-group-item a:focus-visible {
+  text-decoration: none;
 }
 
 /* Sidebar vocab and concept pages
