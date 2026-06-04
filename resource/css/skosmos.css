@@ -522,7 +522,7 @@ header .container-fluid .row {
 
 #search-wrapper #language-list .dropdown-item:focus-within {
   outline: 3px solid var(--focus-color);
-   outline-offset: -3px;
+  outline-offset: -3px;
 }
 
 /* Search field */
