@@ -36,4 +36,17 @@ describe('Sidebar', () => {
     cy.get('#sidebar-collapse-btn').invoke('text').should('contain', 'Selaa käsitteitä')
     cy.get('#sidebar-col').should('not.be.visible')
   })
+
+  it('Keyboard navigation', () => {
+    // Go to YSO home page
+    cy.visit('/yso/fi/')
+    // Focus on first tab
+    cy.get('#sidebar-tabs').find('.nav-link').first().focus()
+    // Check that alphabetical list is shown
+    cy.get('.tab-content').find('#tab-alphabetical').should('exist')
+    // Press right arrow key
+    cy.press(Cypress.Keyboard.Keys.RIGHT)
+    // Check that hierarchy is loaded
+    cy.get('#hierarchy-list ul').should('exist')
+  })
 })
