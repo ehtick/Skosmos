@@ -142,7 +142,7 @@ describe('Concept page', () => {
     // Check that "my property" property label is capitalized correctly
     cy.get('.prop-my_property .property-label h2').invoke('text').should('include', 'My property')
   })
-  it('overrides property labels', () => {
+  it('overrides concept property labels', () => {
     // Go to "Carp" concept page in vocab with property label overrides
     cy.visit('/conceptPropertyLabels/en/page/ta112')
     // Check that prefLabel property label is overridden correctly

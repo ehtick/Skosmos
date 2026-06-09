@@ -14,7 +14,14 @@
 
       {% for key, values in vocabInfo %}
       <div class="row property">
-        <div class="col-lg-4 ps-0 property-label"><h2>{{ key | trans }}</h2></div>
+        {%- set label = custom_labels[key]['label'][request.lang] | default(key | trans) -%}
+        {%- set tooltip = custom_labels[key]['description'][request.lang] | default('') -%}
+        {%- set desc_id = 'vocab-prop-desc-' ~ loop.index -%}
+        <div class="col-lg-4 ps-0 property-label"><h2{% if tooltip is not empty %} class="tooltip-inline t-top" data-title="{{ tooltip }}" aria-describedby="{{ desc_id }}"{% endif %}>{{ label }}</h2>
+          {%- if tooltip is not empty %}
+          <span id="{{ desc_id }}" class="visually-hidden">{{ tooltip }}</span>
+          {%- endif %}
+        </div>
         <div class="col-lg-8 gx-0 gx-lg-4 align-self-center property-value">
           <ul class="align-bottom">
             {% for val in values %}

@@ -39,6 +39,18 @@ describe('Vocabulary home page', () => {
     // check that the vocabulary title is correct
     cy.get('#vocab-title > a').invoke('text').should('contain', 'Test ontology')
   })
+  it('Vocabulary property label is overridden', () => {
+    cy.visit('/conceptPropertyLabels/en/')
+    // Loop through all .row.property and if the element has a .property-value ul li with text "Overridden property value", check the label and title of the .property-label for this row
+    cy.get('.row.property').each($row => {
+      cy.wrap($row).find('.property-value ul li').each($li => {
+        if ($li.text().includes('Overridden property value')) {
+          cy.wrap($row).find('.property-label h2').eq(0).invoke('text').should('include', 'Vocabulary Property')
+          cy.wrap($row).find('.property-label h2').eq(0).should('have.attr', 'data-title').and('contain', 'Vocabulary Property description')
+        }
+      })
+    })
+  })
   it('Clicking on hierarchy entries performs partial page load', () => {
     cy.visit('/test/en') // go to the "Test ontology" home page
 
