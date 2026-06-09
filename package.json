@@ -15,7 +15,8 @@
     "@formatjs/intl-collator": "^0.2.2",
     "@fortawesome/fontawesome-free": "^7.2.0",
     "bootstrap": "^5.3.*",
-    "vue": "^3.5.25"
+    "vue": "^3.5.25",
+    "vue-i18n": "^11.2.8"
   },
   "devDependencies": {
     "axe-core": "^4.11.*",
